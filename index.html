@@ -1463,3 +1463,1849 @@
         </div>
       </div>
     </section><!-- END MODULE 2: POWER SERIES -->
+  <!-- =====================================================================
+         MODULE 3: TAYLOR'S SERIES, REMAINDER & CALCULATORS (SLIDES 26 - 41)
+         ===================================================================== -->
+    <section id="panel-taylor" class="module-panel" aria-labelledby="heading-taylor">
+      <div class="module-banner">
+        <div>
+          <h2 id="heading-taylor">3. Taylor’s Series, Remainder Bounds &amp; Calculator Algorithms</h2>
+          <p>
+            Match derivatives at \(x = c\) to build Taylor and Maclaurin polynomials, prove convergence via Lagrange’s Remainder \(R_n(x)\), and discover how scientific calculators actually compute \(\sin x\).
+          </p>
+        </div>
+        <span class="slide-ref-pill">Lecture Notes 11 • Slides 26–41</span>
+      </div>
+
+      <!-- THEORY CARDS: DEFINITION 3.1 & THEOREM 3.1 -->
+      <div class="ped-grid">
+        <div class="beamer-box def-box">
+          <div class="beamer-box-title">Definition ( 3.1 ) — Taylor’s &amp; Maclaurin’s Series (Slides 26–28)</div>
+          <div class="beamer-box-body">
+            <p>
+              Repeatedly differentiating \(f(x) = \sum_{n=0}^{\infty} a_n (x - c)^n\) at \(x = c\) forces \(f^{(n)}(c) = n!\,a_n\), so \(a_n = \dfrac{f^{(n)}(c)}{n!}\) <span class="eq-tag">(11)</span>
+            </p>
+            <p>
+              The <strong>Taylor’s series</strong> of \(f\) at \(c\) (and <strong>Maclaurin’s series</strong> when \(c = 0\)) are:
+              <span class="eq-tag">(12)–(13)</span>
+            </p>
+            \[ \sum_{n=0}^{\infty} \frac{f^{(n)}(c)}{n!}(x - c)^n \qquad \text{and} \qquad \sum_{n=0}^{\infty} \frac{f^{(n)}(0)}{n!} x^n. \]
+            <p style="color:var(--crimson);font-weight:600;font-size:0.88rem;">
+              ⚠️ Warning (Slide 28): Having derivatives of all orders lets us write down Taylor’s series, <em>not</em> guarantee it converges to \(f(x)\)! (Try the \(e^{-1/x^2}\) preset below.)
+            </p>
+          </div>
+        </div>
+
+        <div class="beamer-box thm-box">
+          <div class="beamer-box-title">Theorem ( 3.1 ) — Taylor’s Formula with Remainder (Slides 31–33)</div>
+          <div class="beamer-box-body">
+            <p>
+              If \(f\) has derivatives up to order \(n+1\) on an open interval \(I\) containing \(c\), then for each \(x \in I\):
+              <span class="eq-tag">(14)</span>
+            </p>
+            \[ f(x) = \underbrace{\sum_{k=0}^{n} \frac{f^{(k)}(c)}{k!}(x - c)^k}_{P_n(x)} + R_n(x), \quad \text{where } R_n(x) = \frac{f^{(n+1)}(\xi)}{(n+1)!}(x - c)^{n+1} \]
+            <p>
+              for some \(\xi\) strictly between \(c\) and \(x\) <span class="eq-tag">(15)</span>. Thus \(P_n(x) \to f(x)\) <strong>if and only if</strong> \(\displaystyle \lim_{n \to \infty} R_n(x) = 0\).
+            </p>
+
+            <details class="deep-dive">
+              <summary>Proof Idea via Rolle’s / Mean Value Theorem (Slides 32–33)</summary>
+              <div class="dive-content">
+                Fix \(x \in I\) (\(x \neq c\)) and define constant \(M\) by \(f(x) = P_n(x) + M(x - c)^{n+1}\). Define auxiliary function \(g(t)\) for \(t\) between \(c\) and \(x\):
+                \[ g(t) = f(x) - \sum_{k=0}^{n} \frac{f^{(k)}(t)}{k!}(x - t)^k - M(x - t)^{n+1}. \]
+                Then \(g(c) = 0\) (by choice of \(M\)) and \(g(x) = 0\) (direct substitution). Differentiating in \(t\) telescopes all interior sum terms, leaving
+                \[ g'(t) = -\frac{f^{(n+1)}(t)}{n!}(x - t)^n + (n+1)M(x - t)^n. \]
+                By Rolle’s Theorem, \(g'(\xi) = 0\) for some \(\xi\) strictly between \(c\) and \(x\), yielding \(M = \dfrac{f^{(n+1)}(\xi)}{(n+1)!}\).
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-LAB 3A: TAYLOR & MACLAURIN POLYNOMIAL STUDIO + REMAINDER BOUND -->
+      <div class="lab-card">
+        <div class="lab-header">
+          <h3><span class="lab-tag">Lab 3A</span> Taylor &amp; Maclaurin Studio + Lagrange Remainder \(R_n(x)\) Explorer</h3>
+          <span style="font-size:0.83rem;color:var(--text-muted);">Exercises 3.1, 3.2, 3.3 &amp; Slide 28 Warning</span>
+        </div>
+
+        <div class="lab-grid">
+          <div class="controls-pane">
+            <div class="control-group">
+              <span class="control-label">Select Function Preset</span>
+              <div class="pill-row">
+                <button class="pill-btn tay-preset active" data-fn="sin" type="button">Ex 3.1 &amp; 3.3: \(\sin x\)</button>
+                <button class="pill-btn tay-preset" data-fn="one_over_x" type="button">Ex 3.2: \(\frac{1}{x}\) at \(c=2\)</button>
+                <button class="pill-btn tay-preset" data-fn="cos" type="button">\(\cos x\)</button>
+                <button class="pill-btn tay-preset" data-fn="exp" type="button">\(e^x\)</button>
+                <button class="pill-btn tay-preset" data-fn="ln1px" type="button">\(\ln(1+x)\)</button>
+                <button class="pill-btn tay-preset" data-fn="cauchy" type="button">⚠️ \(e^{-1/x^2}\) (\(c=0\))</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="tay-n">
+                <span>Taylor Polynomial Order \(n\)</span>
+                <span id="tay-n-val" class="control-val">n = 5</span>
+              </label>
+              <input id="tay-n" type="range" min="0" max="13" step="1" value="5" />
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="tay-c">
+                <span>Expansion Center \(c\)</span>
+                <span id="tay-c-val" class="control-val">c = 0.0</span>
+              </label>
+              <input id="tay-c" type="range" min="-2.0" max="3.0" step="0.1" value="0.0" />
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="tay-x">
+                <span>Evaluation Point \(x\)</span>
+                <span id="tay-x-val" class="control-val">x = 1.20</span>
+              </label>
+              <input id="tay-x" type="range" min="-4.0" max="4.5" step="0.05" value="1.20" />
+              <div class="pill-row" style="margin-top:0.25rem;">
+                <button class="pill-btn tay-x-chip" data-x="0.5" type="button">\(x = 0.5\)</button>
+                <button class="pill-btn tay-x-chip" data-x="1.0" type="button">\(x = 1\)</button>
+                <button class="pill-btn tay-x-chip" data-x="1.5708" type="button">\(x \approx \frac{\pi}{2}\)</button>
+                <button class="pill-btn tay-x-chip" data-x="3.1416" type="button">\(x \approx \pi\)</button>
+              </div>
+            </div>
+
+            <label class="checkbox-row" for="tay-show-rem">
+              <input id="tay-show-rem" type="checkbox" checked />
+              <span>Display Lagrange Remainder Curve \(|f(x) - P_n(x)|\)</span>
+            </label>
+
+            <div class="data-table-wrap" style="max-height:225px;overflow-y:auto;">
+              <table class="math-table">
+                <thead>
+                  <tr>
+                    <th>\(k\)</th>
+                    <th>\(f^{(k)}(c)\)</th>
+                    <th>\(a_k = \frac{f^{(k)}(c)}{k!}\)</th>
+                    <th>Term at \(x\)</th>
+                  </tr>
+                </thead>
+                <tbody id="tay-coeff-tbody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="visual-pane">
+            <div class="canvas-wrap">
+              <canvas id="canvas-taylor" class="plot-canvas"></canvas>
+            </div>
+
+            <div id="tay-rem-wrap" class="canvas-wrap">
+              <canvas id="canvas-taylor-rem" class="plot-canvas mini-canvas"></canvas>
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric-tile">
+                <div class="m-label">Exact \(f(x)\)</div>
+                <div id="tay-m-fx" class="m-val">0.932039</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Polynomial \(P_n(x)\)</div>
+                <div id="tay-m-pn" class="m-val">0.932736</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Actual \(|R_n(x)|\)</div>
+                <div id="tay-m-err" class="m-val">6.97e-4</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Lagrange Upper Bound</div>
+                <div id="tay-m-bound" class="m-val">4.15e-3</div>
+              </div>
+            </div>
+
+            <div id="tay-poly-formula" class="insight-callout" style="overflow-x:auto;">
+              <!-- Live polynomial expansion rendered via KaTeX -->
+            </div>
+
+            <div id="tay-derivation" class="derivation-card">
+              <!-- Exercise 3.1 / 3.2 / 3.3 / Cauchy notes rendered via KaTeX -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-LAB 3B: HOW SCIENTIFIC CALCULATORS COMPUTE SIN(X) — CORDIC VS MACLAURIN -->
+      <div class="lab-card">
+        <div class="lab-header">
+          <h3><span class="lab-tag">Lab 3B</span> Inside Your Scientific Calculator: Range Reduction &amp; CORDIC vs. Maclaurin</h3>
+          <span style="font-size:0.83rem;color:var(--text-muted);">Slides 39–41 • Hardware Computing Deep-Dive</span>
+        </div>
+
+        <div class="lab-grid">
+          <div class="controls-pane">
+            <div class="insight-callout" style="font-size:0.85rem;">
+              <strong>Why don’t pocket calculators just plug \(x\) into Maclaurin’s series? (Slides 39–41)</strong><br />
+              1. Large \(x\) causes huge intermediate powers \(x^{2k+1}\) and catastrophic cancellation before factorial growth wins.<br />
+              2. Early calculator chips (e.g., HP-35, 1972) lacked fast hardware multipliers! Instead, Jack Volder’s <strong>CORDIC</strong> algorithm (1959) rotates a unit vector by pre-stored angles \(\alpha_i = \arctan(2^{-i})\) using <em>only bit-shifts (\(2^{-i}\)) and additions</em>.<sup>†</sup>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="cordic-deg">
+                <span>Input Angle \(\theta\) (Degrees)</span>
+                <span id="cordic-deg-val" class="control-val">37°</span>
+              </label>
+              <input id="cordic-deg" type="range" min="-360" max="720" step="1" value="37" />
+              <div class="pill-row" style="margin-top:0.25rem;">
+                <button class="pill-btn cordic-angle-chip" data-deg="30" type="button">\(30^\circ\)</button>
+                <button class="pill-btn cordic-angle-chip active" data-deg="37" type="button">\(37^\circ\)</button>
+                <button class="pill-btn cordic-angle-chip" data-deg="72" type="button">\(72^\circ\)</button>
+                <button class="pill-btn cordic-angle-chip" data-deg="215" type="button">\(215^\circ\)</button>
+                <button class="pill-btn cordic-angle-chip" data-deg="680" type="button">\(680^\circ\) (Large!)</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="cordic-steps">
+                <span>Iterations / Non-zero Terms \(k\)</span>
+                <span id="cordic-steps-val" class="control-val">k = 6</span>
+              </label>
+              <input id="cordic-steps" type="range" min="1" max="12" step="1" value="6" />
+            </div>
+
+            <p style="font-size:0.78rem;color:var(--text-muted);">
+              <sup>†</sup>Footnote 3 (Slide 41): Modern FPUs combine argument reduction, lookup tables, and minimax/CORDIC schemes — see J.-M. Muller, <em>Elementary Functions: Algorithms and Implementation</em> (3rd ed., Birkhäuser, 2016).
+            </p>
+          </div>
+
+          <div class="visual-pane">
+            <div class="canvas-wrap">
+              <canvas id="canvas-cordic" class="plot-canvas short-canvas"></canvas>
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric-tile">
+                <div class="m-label">Reduced Angle \(x_{\text{red}} \in [-\frac{\pi}{2}, \frac{\pi}{2}]\)</div>
+                <div id="cordic-m-red" class="m-val">37° (0.6458 rad)</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Exact \(\sin\theta\)</div>
+                <div id="cordic-m-exact" class="m-val">0.60181502</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">CORDIC (\(k\) bit-shifts)</div>
+                <div id="cordic-m-val" class="m-val">0.60958511</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Raw Maclaurin (no reduction)</div>
+                <div id="cordic-m-mac" class="m-val">0.60181502</div>
+              </div>
+            </div>
+
+            <div class="data-table-wrap" style="max-height:210px;overflow-y:auto;">
+              <table class="math-table">
+                <thead>
+                  <tr>
+                    <th>Step \(i\)</th>
+                    <th>Shift \(2^{-i}\)</th>
+                    <th>\(\alpha_i = \arctan(2^{-i})\)</th>
+                    <th>Dir \(\sigma_i\)</th>
+                    <th>CORDIC \(\sin\) Est.</th>
+                    <th>Reduced Maclaurin Est.</th>
+                  </tr>
+                </thead>
+                <tbody id="cordic-tbody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- END MODULE 3: TAYLOR'S SERIES -->
+
+
+    <!-- =====================================================================
+         MODULE 4: SELF-GRADING CONCEPT CHECK QUIZ (8 QUESTIONS)
+         ===================================================================== -->
+    <section id="panel-quiz" class="module-panel" aria-labelledby="heading-quiz">
+      <div class="module-banner">
+        <div>
+          <h2 id="heading-quiz">4. Lecture Notes 11 — Interactive Concept Check</h2>
+          <p>
+            Test your understanding of Zeno’s paradox, sequence limits, geometric series, power series endpoint traps, and Taylor’s Remainder Theorem with instant worked feedback.
+          </p>
+        </div>
+        <span class="slide-ref-pill">8 Diagnostic Questions</span>
+      </div>
+
+      <div class="quiz-topbar">
+        <div id="quiz-score-pill" class="score-pill">Score: 0 / 8 Correct (0 Answered)</div>
+        <div class="pill-row">
+          <button id="quiz-reveal-btn" class="action-btn secondary" type="button">👁 Show All Worked Explanations</button>
+          <button id="quiz-reset-btn" class="action-btn" type="button">↺ Reset Quiz</button>
+        </div>
+      </div>
+
+      <div id="quiz-list" class="quiz-grid">
+        <!-- Populated dynamically by Module 4 JS Engine -->
+      </div>
+    </section><!-- END MODULE 4: QUIZ -->
+
+  </main><!-- END MAIN CONTAINER -->
+
+  <!-- Beamer-Inspired Footer -->
+  <footer class="site-footer">
+    <div class="footer-gold-strip">
+      <span>Dr. LEE Kei Fung, Charles (PolyU)</span>
+      <span>AMA1702 Calculus — Lecture Notes 11</span>
+      <span>25 November 2026</span>
+    </div>
+    <div class="footer-inner">
+      <div>
+        <strong>Department of Applied Mathematics</strong> • The Hong Kong Polytechnic University
+      </div>
+      <div>
+        Student Consultation: <strong>Friday 08:30 – 10:20, Room TU715</strong>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =======================================================================
+       INTERACTIVE JAVASCRIPT ENGINES
+       ======================================================================= -->
+  <script>
+    "use strict";
+
+    /* -----------------------------------------------------------------------
+       0. SHARED MATH, FORMATTING & HiDPI CANVAS UTILITIES
+       ----------------------------------------------------------------------- */
+    const GOLDEN_PHI = (1 + Math.sqrt(5)) / 2;
+
+    function gcd(a, b) {
+      let x = Math.abs(Math.trunc(a));
+      let y = Math.abs(Math.trunc(b));
+      while (y !== 0) {
+        const t = x % y;
+        x = y;
+        y = t;
+      }
+      return x || 1;
+    }
+
+    function factorial(n) {
+      if (n <= 1) return 1;
+      let res = 1;
+      for (let i = 2; i <= n; i++) res *= i;
+      return res;
+    }
+
+    function fmtNum(val, digits = 6) {
+      if (!Number.isFinite(val)) return val > 0 ? "+∞" : val < 0 ? "-∞" : "Undefined";
+      if (Math.abs(val) === 0) return "0";
+      if (Math.abs(val) >= 1e5 || (Math.abs(val) < 1e-4 && Math.abs(val) > 0)) {
+        return val.toExponential(3);
+      }
+      return Number(val.toFixed(digits)).toString();
+    }
+
+    function renderMathIn(el) {
+      if (!el || typeof window.renderMathInElement !== "function") return;
+      window.renderMathInElement(el, {
+        delimiters: [
+          { left: "\\[", right: "\\]", display: true },
+          { left: "\\(", right: "\\)", display: false }
+        ],
+        throwOnError: false
+      });
+    }
+
+    function setupHiDPICanvas(canvas) {
+      if (!canvas) return null;
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width < 10 || rect.height < 10) return null;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const targetW = Math.round(rect.width * dpr);
+      const targetH = Math.round(rect.height * dpr);
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
+      }
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      return { ctx, w: rect.width, h: rect.height };
+    }
+
+    function niceStep(span, targetTicks = 6) {
+      if (span <= 0 || !Number.isFinite(span)) return 1;
+      const raw = span / targetTicks;
+      const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+      const norm = raw / mag;
+      let step;
+      if (norm < 1.5) step = 1;
+      else if (norm < 3.5) step = 2;
+      else if (norm < 7.5) step = 5;
+      else step = 10;
+      return step * mag;
+    }
+
+    function drawCartesianAxes(ctx, pad, w, h, xMin, xMax, yMin, yMax, xLabel = "x", yLabel = "y", intX = false) {
+      const plotW = w - pad.l - pad.r;
+      const plotH = h - pad.t - pad.b;
+      const toX = (x) => pad.l + ((x - xMin) / (xMax - xMin)) * plotW;
+      const toY = (y) => pad.t + plotH - ((y - yMin) / (yMax - yMin)) * plotH;
+
+      // Subtle grid
+      ctx.save();
+      ctx.strokeStyle = "#E2E8F0";
+      ctx.lineWidth = 1;
+      ctx.fillStyle = "#64748B";
+      ctx.font = "11px -apple-system, BlinkMacSystemFont, sans-serif";
+
+      const xStep = intX ? Math.max(1, Math.round(niceStep(xMax - xMin, 8))) : niceStep(xMax - xMin, 7);
+      const xStart = Math.ceil(xMin / xStep) * xStep;
+      for (let xv = xStart; xv <= xMax + 1e-9; xv += xStep) {
+        const px = toX(xv);
+        ctx.beginPath();
+        ctx.moveTo(px, pad.t);
+        ctx.lineTo(px, pad.t + plotH);
+        ctx.stroke();
+        ctx.textAlign = "center";
+        ctx.fillText(intX ? String(Math.round(xv)) : fmtNum(xv, 2), px, pad.t + plotH + 15);
+      }
+
+      const yStep = niceStep(yMax - yMin, 5);
+      const yStart = Math.ceil(yMin / yStep) * yStep;
+      for (let yv = yStart; yv <= yMax + 1e-9; yv += yStep) {
+        const py = toY(yv);
+        ctx.beginPath();
+        ctx.moveTo(pad.l, py);
+        ctx.lineTo(pad.l + plotW, py);
+        ctx.stroke();
+        ctx.textAlign = "right";
+        ctx.fillText(fmtNum(yv, 2), pad.l - 7, py + 4);
+      }
+
+      // Zero axes if inside range
+      ctx.strokeStyle = "#94A3B8";
+      ctx.lineWidth = 1.4;
+      if (yMin <= 0 && yMax >= 0) {
+        const y0 = toY(0);
+        ctx.beginPath();
+        ctx.moveTo(pad.l, y0);
+        ctx.lineTo(pad.l + plotW, y0);
+        ctx.stroke();
+      }
+      if (xMin <= 0 && xMax >= 0) {
+        const x0 = toX(0);
+        ctx.beginPath();
+        ctx.moveTo(x0, pad.t);
+        ctx.lineTo(x0, pad.t + plotH);
+        ctx.stroke();
+      }
+
+      // Frame border
+      ctx.strokeStyle = "#CBD5E1";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(pad.l, pad.t, plotW, plotH);
+
+      // Axis titles
+      ctx.fillStyle = "#334155";
+      ctx.font = "bold 11.5px -apple-system, BlinkMacSystemFont, sans-serif";
+      ctx.textAlign = "right";
+      ctx.fillText(xLabel, pad.l + plotW, h - 4);
+      ctx.textAlign = "left";
+      ctx.fillText(yLabel, pad.l + 6, pad.t + 13);
+      ctx.restore();
+
+      return { toX, toY, plotW, plotH };
+    }
+
+    /* Registry of redraw callbacks when tabs switch or window resizes */
+    const activeRedrawers = [];
+    function redrawAllVisible() {
+      activeRedrawers.forEach((fn) => fn());
+    }
+
+    /* Sticky Module Tab Switching */
+    document.querySelectorAll(".nav-tab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.getAttribute("data-target");
+        document.querySelectorAll(".nav-tab").forEach((b) => b.classList.remove("active"));
+        document.querySelectorAll(".module-panel").forEach((p) => p.classList.remove("active"));
+        btn.classList.add("active");
+        const panel = document.getElementById(targetId);
+        if (panel) panel.classList.add("active");
+        requestAnimationFrame(redrawAllVisible);
+      });
+    });
+
+    window.addEventListener("resize", () => {
+      requestAnimationFrame(redrawAllVisible);
+    });
+
+
+    /* -----------------------------------------------------------------------
+       1A. ZENO'S DICHOTOMY PARADOX SIMULATOR (FIGURES 1 & 2, SLIDES 3–4, 17–21)
+       ----------------------------------------------------------------------- */
+    const zenoState = {
+      mode: "fwd", // "fwd" = Fig 1 (No First Step), "rev" = Fig 2 (No Last Step)
+      n: 3,
+      timer: null
+    };
+
+    const elZenoStep = document.getElementById("zeno-step");
+    const elZenoStepVal = document.getElementById("zeno-step-val");
+    const elZenoFwd = document.getElementById("zeno-mode-fwd");
+    const elZenoRev = document.getElementById("zeno-mode-rev");
+    const elZenoPlay = document.getElementById("zeno-play");
+
+    function updateZenoUI() {
+      const n = zenoState.n;
+      elZenoStep.value = String(n);
+      elZenoStepVal.textContent = `n = ${n}`;
+
+      const denom = Math.pow(2, n);
+      const gap = 1 / denom;
+      const pSum = n === 0 ? 0 : 1 - gap;
+
+      document.getElementById("zeno-pos").textContent =
+        n === 0
+          ? "0 m (Start)"
+          : zenoState.mode === "fwd"
+          ? `1/${denom} (${gap.toFixed(6)} m)`
+          : `${denom - 1}/${denom} (${pSum.toFixed(6)} m)`;
+
+      document.getElementById("zeno-psum").textContent =
+        n === 0 ? "0" : `${denom - 1}/${denom} = ${pSum.toFixed(6)}`;
+      document.getElementById("zeno-rem").textContent =
+        n === 0 ? "1 = 1.000000" : `1/${denom} = ${gap.toFixed(6)}`;
+
+      const msgEl = document.getElementById("zeno-status-msg");
+      if (zenoState.mode === "fwd") {
+        msgEl.innerHTML =
+          n === 0
+            ? `<strong>Figure 1 (Original Dichotomy):</strong> You want to walk \(1\text{ m}\) from \(0\) to \(1\). Click <em>Next Subdivision</em> to bisect the journey.`
+            : `<strong>Figure 1 (No First Step!):</strong> Before reaching \(\frac{1}{2^{${Math.max(0, n - 1)}}}\), you must first reach \(\mathbf{\frac{1}{2^{${n}}} = \frac{1}{${denom}}}\). Yet \([0, \frac{1}{${denom}}]\) still splits infinitely—you face the <em>infinite tail end</em> right at \(x = 0\) and cannot even begin!`;
+      } else {
+        msgEl.innerHTML =
+          n === 0
+            ? `<strong>Figure 2 (Reverse Dichotomy):</strong> Suppose you step \(\frac{1}{2}\), then \(\frac{1}{4}\), then \(\frac{1}{8}\dots\) Click <em>Next Subdivision</em> to advance.`
+            : `<strong>Figure 2 (No Last Step!):</strong> After \(${n}\) halving steps you reach \(\mathbf{\frac{${denom - 1}}{${denom}}}\), leaving \(\frac{1}{${denom}}\text{ m}\) to go. Now the <em>infinite tail end</em> blocks your arrival at \(1\text{ m}\)—there is no final step!`;
+      }
+      renderMathIn(msgEl);
+      drawZenoCanvas();
+    }
+
+    function drawZenoCanvas() {
+      const canvas = document.getElementById("canvas-zeno");
+      const info = setupHiDPICanvas(canvas);
+      if (!info) return;
+      const { ctx, w, h } = info;
+
+      const padL = 46;
+      const padR = 46;
+      const trackW = w - padL - padR;
+      const mainY = 78;
+      const n = zenoState.n;
+      const mapX = (u) => padL + u * trackW;
+
+      // Title banner inside canvas
+      ctx.fillStyle = "#0F172A";
+      ctx.font = "bold 12.5px -apple-system, BlinkMacSystemFont, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText(
+        zenoState.mode === "fwd"
+          ? "Figure 1: Original Zeno’s Dichotomy — Infinite Tail End at Start (x = 0)"
+          : "Figure 2: Reverse Zeno’s Dichotomy — Infinite Tail End at Finish (x = 1)",
+        padL,
+        24
+      );
+
+      // Base track [0, 1]
+      ctx.lineWidth = 10;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#E2E8F0";
+      ctx.beginPath();
+      ctx.moveTo(mapX(0), mainY);
+      ctx.lineTo(mapX(1), mainY);
+      ctx.stroke();
+
+      const palette = ["#2563EB", "#0284C7", "#0D9488", "#16A34A", "#65A30D", "#CA8A04", "#EA580C", "#DC2626"];
+
+      if (zenoState.mode === "fwd") {
+        // Segments from right to left: [1/2, 1], [1/4, 1/2], ..., [1/2^n, 1/2^(n-1)]
+        for (let k = 1; k <= n; k++) {
+          const right = 1 / Math.pow(2, k - 1);
+          const left = 1 / Math.pow(2, k);
+          ctx.strokeStyle = palette[(k - 1) % palette.length];
+          ctx.lineWidth = 10;
+          ctx.lineCap = "butt";
+          ctx.beginPath();
+          ctx.moveTo(mapX(left), mainY);
+          ctx.lineTo(mapX(right), mainY);
+          ctx.stroke();
+
+          // Tick & label if wide enough
+          const px = mapX(left);
+          ctx.strokeStyle = "#1E293B";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(px, mainY - 10);
+          ctx.lineTo(px, mainY + 10);
+          ctx.stroke();
+
+          if (trackW * (right - left) > 28 || k === n) {
+            ctx.fillStyle = "#1E293B";
+            ctx.font = "bold 11px -apple-system, sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(`1/${Math.pow(2, k)}`, px, mainY + 25);
+          }
+        }
+
+        // Unresolved infinite tail [0, 1/2^n] highlighted in dashed crimson
+        const tailEnd = 1 / Math.pow(2, n);
+        ctx.strokeStyle = "#DC2626";
+        ctx.lineWidth = 4;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(mapX(0), mainY);
+        ctx.lineTo(mapX(tailEnd), mainY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Walker stuck at x = 0
+        drawWalkerMarker(ctx, mapX(0), mainY - 18, "#A6192E", "Stuck at 0!");
+      } else {
+        // Reverse: steps from left to right: [0, 1/2], [1/2, 3/4], ..., [1 - 1/2^(n-1), 1 - 1/2^n]
+        for (let k = 1; k <= n; k++) {
+          const left = 1 - 1 / Math.pow(2, k - 1);
+          const right = 1 - 1 / Math.pow(2, k);
+          ctx.strokeStyle = palette[(k - 1) % palette.length];
+          ctx.lineWidth = 10;
+          ctx.lineCap = "butt";
+          ctx.beginPath();
+          ctx.moveTo(mapX(left), mainY);
+          ctx.lineTo(mapX(right), mainY);
+          ctx.stroke();
+
+          const px = mapX(right);
+          ctx.strokeStyle = "#1E293B";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(px, mainY - 10);
+          ctx.lineTo(px, mainY + 10);
+          ctx.stroke();
+
+          if (trackW * (right - left) > 34 || (k === n && k <= 4)) {
+            ctx.fillStyle = "#1E293B";
+            ctx.font = "bold 11px -apple-system, sans-serif";
+            ctx.textAlign = "center";
+            const denom = Math.pow(2, k);
+            ctx.fillText(`${denom - 1}/${denom}`, px, mainY + 25);
+          }
+        }
+
+        // Unresolved tail [1 - 1/2^n, 1]
+        const curPos = 1 - 1 / Math.pow(2, n);
+        ctx.strokeStyle = "#DC2626";
+        ctx.lineWidth = 4;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(mapX(curPos), mainY);
+        ctx.lineTo(mapX(1), mainY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        drawWalkerMarker(ctx, mapX(curPos), mainY - 18, "#15803D", n === 0 ? "Start (0)" : `Step ${n}`);
+      }
+
+      // Endpoint flags 0 m and 1 m
+      ctx.fillStyle = "#0F172A";
+      ctx.font = "bold 12px -apple-system, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("0 m", mapX(0), mainY + 42);
+      ctx.fillText("1 m (Goal)", mapX(1), mainY + 42);
+
+      // Magnifying Glass Zoom Bar for the Unresolved Tail Zone
+      const zoomY = 162;
+      const denom = Math.pow(2, n);
+      ctx.fillStyle = "#FFFBEB";
+      ctx.strokeStyle = "#F59E0B";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.roundRect(padL, zoomY - 26, trackW, 56, 8);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "#92400E";
+      ctx.font = "bold 11.5px -apple-system, sans-serif";
+      ctx.textAlign = "left";
+      if (zenoState.mode === "fwd") {
+        ctx.fillText(
+          `🔍 Zoom into Unresolved Start Zone [0, 1/${denom}]: Next required midpoints are 1/${denom * 2}, 1/${denom * 4}, 1/${denom * 8}, … (No FIRST step!)`,
+          padL + 12,
+          zoomY - 6
+        );
+      } else {
+        ctx.fillText(
+          `🔍 Zoom into Unresolved Finish Zone [${denom - 1}/${denom}, 1]: Remaining midpoints require +1/${denom * 2}, +1/${denom * 4}, +1/${denom * 8}, … (No LAST step!)`,
+          padL + 12,
+          zoomY - 6
+        );
+      }
+
+      // Draw mini sub-ticks inside zoom bar
+      const subL = padL + 16;
+      const subR = padL + trackW - 16;
+      const subW = subR - subL;
+      ctx.strokeStyle = "#D97706";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(subL, zoomY + 14);
+      ctx.lineTo(subR, zoomY + 14);
+      ctx.stroke();
+
+      for (let m = 1; m <= 5; m++) {
+        const frac = zenoState.mode === "fwd" ? 1 / Math.pow(2, m) : 1 - 1 / Math.pow(2, m);
+        const sx = subL + frac * subW;
+        ctx.beginPath();
+        ctx.arc(sx, zoomY + 14, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = "#DC2626";
+        ctx.fill();
+      }
+    }
+
+    function drawWalkerMarker(ctx, x, y, color, label) {
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, y, 7, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#FFFFFF";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.font = "bold 11px -apple-system, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillStyle = color;
+      ctx.fillText(label, x, y - 12);
+      ctx.restore();
+    }
+
+    function stopZenoAuto() {
+      if (zenoState.timer) {
+        clearInterval(zenoState.timer);
+        zenoState.timer = null;
+        elZenoPlay.textContent = "▶ Auto-Step";
+      }
+    }
+
+    elZenoFwd.addEventListener("click", () => {
+      stopZenoAuto();
+      zenoState.mode = "fwd";
+      elZenoFwd.classList.add("active");
+      elZenoRev.classList.remove("active");
+      updateZenoUI();
+    });
+
+    elZenoRev.addEventListener("click", () => {
+      stopZenoAuto();
+      zenoState.mode = "rev";
+      elZenoRev.classList.add("active");
+      elZenoFwd.classList.remove("active");
+      updateZenoUI();
+    });
+
+    elZenoStep.addEventListener("input", () => {
+      stopZenoAuto();
+      zenoState.n = parseInt(elZenoStep.value, 10);
+      updateZenoUI();
+    });
+
+    document.getElementById("zeno-prev").addEventListener("click", () => {
+      stopZenoAuto();
+      zenoState.n = Math.max(0, zenoState.n - 1);
+      updateZenoUI();
+    });
+
+    document.getElementById("zeno-next").addEventListener("click", () => {
+      stopZenoAuto();
+      zenoState.n = Math.min(10, zenoState.n + 1);
+      updateZenoUI();
+    });
+
+    document.getElementById("zeno-reset").addEventListener("click", () => {
+      stopZenoAuto();
+      zenoState.n = 0;
+      updateZenoUI();
+    });
+
+    elZenoPlay.addEventListener("click", () => {
+      if (zenoState.timer) {
+        stopZenoAuto();
+        return;
+      }
+      if (zenoState.n >= 10) zenoState.n = 0;
+      elZenoPlay.textContent = "⏸ Pause";
+      zenoState.timer = setInterval(() => {
+        if (zenoState.n < 10) {
+          zenoState.n += 1;
+          updateZenoUI();
+        } else {
+          stopZenoAuto();
+        }
+      }, 750);
+    });
+
+    activeRedrawers.push(drawZenoCanvas);
+
+
+    /* -----------------------------------------------------------------------
+       1B. SEQUENCE CONVERGENCE, EPSILON-N & FIBONACCI GOLDEN RATIO (EX 1.1–1.4)
+       ----------------------------------------------------------------------- */
+    const FIB_CACHE = [0, 1];
+    for (let i = 2; i <= 45; i++) FIB_CACHE.push(FIB_CACHE[i - 1] + FIB_CACHE[i - 2]);
+
+    const SEQ_PRESETS = {
+      ex1_1: {
+        startN: 1,
+        limit: 0,
+        converges: true,
+        an: (n) => 1 / Math.pow(2, n),
+        fx: (x) => Math.pow(2, -x),
+        calcN: (eps) => Math.max(0, Math.floor(Math.log2(1 / eps))),
+        derivation: (eps, N) => `
+          <h4>Worked Solution — Exercise 1.1 (Slide 6): \\(a_n = \\frac{1}{2^n} \\; (n \\ge 1)\\)</h4>
+          <p>Given \\(\\varepsilon = ${eps.toFixed(2)} > 0\\), we solve \\(|a_n - 0| = \\dfrac{1}{2^n} < \\varepsilon \\iff 2^n > \\dfrac{1}{\\varepsilon} \\iff n > \\log_2\\!\\left(\\dfrac{1}{\\varepsilon}\\right) \\approx ${Math.log2(1 / eps).toFixed(2)}\\).</p>
+          <p>Choosing integer \\(N = ${N}\\), every integer \\(n > ${N}\\) satisfies \\(\\left|\\dfrac{1}{2^n} - 0\\right| < ${eps.toFixed(2)}\\). By Definition 1.1, \\(\\displaystyle \\lim_{n\\to\\infty} \\frac{1}{2^n} = 0\\).</p>`
+      },
+      ex1_2: {
+        startN: 0,
+        limit: 2 / 3,
+        converges: true,
+        an: (n) => (2 * n + 1) / (3 * n + 2),
+        fx: (x) => (2 * x + 1) / (3 * x + 2),
+        calcN: (eps) => {
+          const raw = (1 / eps - 6) / 9;
+          return raw < 0 ? -1 : Math.floor(raw);
+        },
+        derivation: (eps, N) => `
+          <h4>Worked Solution — Exercise 1.2 (Slide 7): \\(a_n = \\frac{2n + 1}{3n + 2}\\)</h4>
+          <p>Divide numerator and denominator by \\(n\\): \\(\\displaystyle \\lim_{n\\to\\infty} \\frac{2n+1}{3n+2} = \\lim_{n\\to\\infty} \\frac{2 + 1/n}{3 + 2/n} = \\frac{2 + 0}{3 + 0} = \\frac{2}{3}\\).</p>
+          <p><em>Direct \\(\\varepsilon\\)-\\(N\\) check:</em> \\(\\left|\\dfrac{2n+1}{3n+2} - \\dfrac{2}{3}\\right| = \\dfrac{1}{9n + 6} < ${eps.toFixed(2)} \\iff n > \\dfrac{1/${eps.toFixed(2)} - 6}{9} \\approx ${((1 / eps - 6) / 9).toFixed(2)}\\), so all \\(n > ${N}\\) lie inside the emerald \\(\\varepsilon\\)-tunnel.</p>`
+      },
+      ex1_3: {
+        startN: 0,
+        limit: Infinity,
+        converges: false,
+        an: (n) => Math.exp(n) / (3 * n + 2),
+        fx: (x) => Math.exp(x) / (3 * x + 2),
+        calcN: () => null,
+        derivation: () => `
+          <h4>Worked Solution — Exercise 1.3 (Slide 8): \\(a_n = \\frac{e^n}{3n + 2}\\) (Divergent via L’Hôpital’s Rule)</h4>
+          <p>Extend \\(a_n\\) to the differentiable real function \\(f(x) = \\dfrac{e^x}{3x + 2}\\). Since \\(\\lim_{x\\to\\infty} e^x = \\infty\\) and \\(\\lim_{x\\to\\infty}(3x+2) = \\infty\\) (indeterminate form \\(\\frac{\\infty}{\\infty}\\)), L’Hôpital’s Rule gives:</p>
+          \\[ \\lim_{x\\to\\infty} \\frac{e^x}{3x + 2} = \\lim_{x\\to\\infty} \\frac{(e^x)'}{(3x+2)'} = \\lim_{x\\to\\infty} \\frac{e^x}{3} = \\infty. \\]
+          <p>Hence \\(\\{a_n\\}\\) grows without bound and <strong>diverges</strong> (no horizontal \\(\\varepsilon\\)-tunnel can trap the tail!).</p>`
+      },
+      ex1_4: {
+        startN: 2,
+        limit: GOLDEN_PHI,
+        converges: true,
+        an: (n) => FIB_CACHE[n] / FIB_CACHE[n - 1],
+        fx: null,
+        calcN: (eps) => {
+          let lastOut = 1;
+          for (let k = 2; k <= 40; k++) {
+            if (Math.abs(FIB_CACHE[k] / FIB_CACHE[k - 1] - GOLDEN_PHI) >= eps) lastOut = k;
+          }
+          return lastOut;
+        },
+        derivation: (eps, N) => `
+          <h4>Worked Solution — Exercise 1.4 (Slides 9–11): Fibonacci Ratio \\(a_n = \\frac{F_n}{F_{n-1}} \\to \\varphi\\)</h4>
+          <p>With \\(F_0 = 0, F_1 = 1\\) and \\(F_n = F_{n-1} + F_{n-2}\\), divide by \\(F_{n-1}\\) to get recurrence (3): \\(a_n = 1 + \\dfrac{1}{a_{n-1}}\\).</p>
+          <p>Since \\(\\{a_n\\}\\) converges to a positive limit \\(L > 0\\), taking \\(n \\to \\infty\\) gives \\(L = 1 + \\dfrac{1}{L} \\implies L^2 - L - 1 = 0\\). Rejecting the negative root \\(\\frac{1-\\sqrt{5}}{2} < 0\\), we obtain the <strong>Golden Ratio</strong> \\(L = \\varphi = \\dfrac{1 + \\sqrt{5}}{2} \\approx 1.618034\\). For \\(\\varepsilon = ${eps.toFixed(2)}\\), \\(|a_n - \\varphi| < \\varepsilon\\) for all \\(n > ${N}\\).</p>`
+      },
+      alt_damped: {
+        startN: 0,
+        limit: 0,
+        converges: true,
+        an: (n) => (n % 2 === 0 ? 1 : -1) / (n + 1),
+        fx: (x) => Math.cos(Math.PI * x) / (x + 1),
+        calcN: (eps) => Math.max(-1, Math.floor(1 / eps - 1)),
+        derivation: (eps, N) => `
+          <h4>Alternating Damped Sequence: \\(a_n = \\frac{(-1)^n}{n + 1}\\)</h4>
+          <p>Even though signs alternate, \\(|a_n - 0| = \\dfrac{1}{n + 1} < ${eps.toFixed(2)} \\iff n > \\dfrac{1}{${eps.toFixed(2)}} - 1 \\approx ${(1 / eps - 1).toFixed(2)}\\).</p>
+          <p>Thus for all \\(n > ${N}\\), every term stays trapped inside \\((-\\varepsilon, +\\varepsilon)\\), so \\(a_n \\to 0\\).</p>`
+      }
+    };
+
+    const seqState = {
+      key: "ex1_1",
+      eps: 0.08,
+      maxN: 18,
+      inspectN: 6,
+      showFx: true
+    };
+
+    const elSeqEps = document.getElementById("seq-eps");
+    const elSeqMaxN = document.getElementById("seq-maxn");
+    const elSeqInsp = document.getElementById("seq-inspect-n");
+    const elSeqFx = document.getElementById("seq-show-fx");
+
+    function updateSequenceLab() {
+      const cfg = SEQ_PRESETS[seqState.key];
+      if (seqState.key === "ex1_3" && seqState.maxN > 10) {
+        // Keep exponential legible unless user intentionally drags higher
+      }
+      elSeqInsp.min = String(cfg.startN);
+      elSeqInsp.max = String(seqState.maxN);
+      if (seqState.inspectN < cfg.startN) seqState.inspectN = cfg.startN;
+      if (seqState.inspectN > seqState.maxN) seqState.inspectN = seqState.maxN;
+      elSeqInsp.value = String(seqState.inspectN);
+
+      document.getElementById("seq-eps-val").textContent = `ε = ${seqState.eps.toFixed(2)}`;
+      document.getElementById("seq-maxn-val").textContent = String(seqState.maxN);
+      document.getElementById("seq-inspect-val").textContent = `n = ${seqState.inspectN}`;
+
+      const N = cfg.calcN(seqState.eps);
+      const anVal = cfg.an(seqState.inspectN);
+
+      document.getElementById("seq-metric-lim").textContent = cfg.converges
+        ? seqState.key === "ex1_2"
+          ? "2/3 ≈ 0.666667"
+          : seqState.key === "ex1_4"
+          ? "φ ≈ 1.618034"
+          : fmtNum(cfg.limit, 6)
+        : "∞ (Diverges)";
+
+      document.getElementById("seq-metric-N").textContent = cfg.converges
+        ? N < cfg.startN
+          ? `All n ≥ ${cfg.startN}`
+          : `N = ${N} (all n > ${N})`
+        : "None (Unbounded)";
+
+      document.getElementById("seq-metric-an").textContent = `a_${seqState.inspectN} = ${fmtNum(anVal, 6)}`;
+
+      const errEl = document.getElementById("seq-metric-err");
+      if (cfg.converges) {
+        const dist = Math.abs(anVal - cfg.limit);
+        const inside = dist < seqState.eps;
+        errEl.innerHTML = `${fmtNum(dist, 5)} <span class="status-badge ${inside ? "status-ok" : "status-bad"}">${inside ? "< ε" : "≥ ε"}</span>`;
+      } else {
+        errEl.innerHTML = `<span class="status-badge status-bad">Grows → ∞</span>`;
+      }
+
+      const fibCard = document.getElementById("fib-golden-card");
+      if (seqState.key === "ex1_4") {
+        fibCard.classList.remove("hidden");
+        drawGoldenRectangleCanvas();
+      } else {
+        fibCard.classList.add("hidden");
+      }
+
+      const derivEl = document.getElementById("seq-derivation");
+      derivEl.innerHTML = cfg.derivation(seqState.eps, N);
+      renderMathIn(derivEl);
+
+      drawSequenceCanvas();
+    }
+
+    function drawSequenceCanvas() {
+      const canvas = document.getElementById("canvas-seq");
+      const info = setupHiDPICanvas(canvas);
+      if (!info) return;
+      const { ctx, w, h } = info;
+      const cfg = SEQ_PRESETS[seqState.key];
+
+      // Determine y-bounds
+      const displayMaxN = seqState.key === "ex1_3" ? Math.min(seqState.maxN, 10) : seqState.maxN;
+      let yMin = Infinity;
+      let yMax = -Infinity;
+      for (let n = cfg.startN; n <= displayMaxN; n++) {
+        const v = cfg.an(n);
+        if (v < yMin) yMin = v;
+        if (v > yMax) yMax = v;
+      }
+      if (cfg.converges) {
+        yMin = Math.min(yMin, cfg.limit - seqState.eps * 1.4);
+        yMax = Math.max(yMax, cfg.limit + seqState.eps * 1.4);
+      } else {
+        yMin = 0;
+      }
+      const padSpan = (yMax - yMin || 1) * 0.14;
+      yMin -= padSpan;
+      yMax += padSpan;
+
+      const pad = { l: 54, r: 22, t: 22, b: 32 };
+      const xMin = Math.max(0, cfg.startN - 0.6);
+      const xMax = displayMaxN + 0.6;
+      const { toX, toY, plotW, plotH } = drawCartesianAxes(ctx, pad, w, h, xMin, xMax, yMin, yMax, "Index n", "aₙ", true);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(pad.l, pad.t, plotW, plotH);
+      ctx.clip();
+
+      // Draw epsilon-N tunnel if convergent
+      const N = cfg.calcN(seqState.eps);
+      if (cfg.converges) {
+        const yTop = toY(cfg.limit + seqState.eps);
+        const yBot = toY(cfg.limit - seqState.eps);
+        ctx.fillStyle = "rgba(21, 128, 61, 0.11)";
+        ctx.fillRect(pad.l, yTop, plotW, yBot - yTop);
+
+        // Tunnel borders
+        ctx.strokeStyle = "rgba(21, 128, 61, 0.55)";
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(pad.l, yTop);
+        ctx.lineTo(pad.l + plotW, yTop);
+        ctx.moveTo(pad.l, yBot);
+        ctx.lineTo(pad.l + plotW, yBot);
+        ctx.stroke();
+
+        // Limit line L
+        const yLim = toY(cfg.limit);
+        ctx.strokeStyle = "#15803D";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([8, 4]);
+        ctx.beginPath();
+        ctx.moveTo(pad.l, yLim);
+        ctx.lineTo(pad.l + plotW, yLim);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Threshold vertical line N
+        if (N !== null && N >= cfg.startN && N <= displayMaxN) {
+          const xN = toX(N + 0.5);
+          ctx.strokeStyle = "#B45309";
+          ctx.lineWidth = 1.6;
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(xN, pad.t);
+          ctx.lineTo(xN, pad.t + plotH);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = "#B45309";
+          ctx.font = "bold 11px -apple-system, sans-serif";
+          ctx.textAlign = "left";
+          ctx.fillText(`n > N = ${N}`, xN + 5, pad.t + 16);
+        }
+      }
+
+      // Continuous f(x) overlay if enabled & defined
+      if (seqState.showFx && typeof cfg.fx === "function") {
+        ctx.strokeStyle = "rgba(29, 78, 216, 0.45)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        const steps = 180;
+        for (let i = 0; i <= steps; i++) {
+          const xv = cfg.startN + ((displayMaxN - cfg.startN) * i) / steps;
+          const yv = cfg.fx(xv);
+          const px = toX(xv);
+          const py = toY(yv);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+      }
+
+      // Inspected term vertical error connector
+      const inspClamped = Math.min(seqState.inspectN, displayMaxN);
+      const inspVal = cfg.an(inspClamped);
+      if (cfg.converges) {
+        ctx.strokeStyle = "#7C3AED";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(toX(inspClamped), toY(cfg.limit));
+        ctx.lineTo(toX(inspClamped), toY(inspVal));
+        ctx.stroke();
+      }
+
+      // Sequence dots a_n
+      for (let n = cfg.startN; n <= displayMaxN; n++) {
+        const val = cfg.an(n);
+        const px = toX(n);
+        const py = toY(val);
+        const inBand = cfg.converges && Math.abs(val - cfg.limit) < seqState.eps;
+
+        if (n === inspClamped) {
+          ctx.beginPath();
+          ctx.arc(px, py, 8.5, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(124, 58, 237, 0.22)";
+          ctx.fill();
+        }
+
+        ctx.beginPath();
+        ctx.arc(px, py, n === inspClamped ? 5.5 : 4.3, 0, Math.PI * 2);
+        ctx.fillStyle = inBand ? "#15803D" : "#DC2626";
+        ctx.fill();
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 1.3;
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function drawGoldenRectangleCanvas() {
+      const canvas = document.getElementById("canvas-golden");
+      const info = setupHiDPICanvas(canvas);
+      if (!info) return;
+      const { ctx, w, h } = info;
+
+      const step = Math.max(2, Math.min(seqState.inspectN, 9));
+      const fn = FIB_CACHE[step];
+      const fn1 = FIB_CACHE[step - 1];
+      const ratio = fn / fn1;
+
+      const pad = 16;
+      const availW = w - pad * 2 - 125;
+      const availH = h - pad * 2;
+      const scale = Math.min(availW / fn, availH / fn1);
+      const rectW = fn * scale;
+      const rectH = fn1 * scale;
+      const x0 = pad;
+      const y0 = (h - rectH) / 2;
+
+      // Subdivide rectangle iteratively into Fibonacci squares + quarter-circle spiral
+      let rx = x0;
+      let ry = y0;
+      let rw = rectW;
+      let rh = rectH;
+      const colors = ["#FDE68A", "#FCD34D", "#FBBF24", "#F59E0B", "#FB923C", "#F87171", "#C084FC", "#60A5FA"];
+
+      ctx.lineWidth = 1.3;
+      for (let k = step; k >= 2; k--) {
+        const sq = FIB_CACHE[k - 1] * scale;
+        const dir = (step - k) % 4;
+        ctx.fillStyle = colors[(step - k) % colors.length];
+        ctx.strokeStyle = "#92400E";
+
+        let sx = rx, sy = ry, cx = rx, cy = ry, a0 = 0, a1 = Math.PI / 2;
+        if (dir === 0) {
+          // Left square
+          sx = rx; sy = ry;
+          cx = rx + sq; cy = ry + sq; a0 = Math.PI; a1 = 1.5 * Math.PI;
+          rx += sq; rw -= sq;
+        } else if (dir === 1) {
+          // Top square
+          sx = rx; sy = ry;
+          cx = rx; cy = ry + sq; a0 = 1.5 * Math.PI; a1 = 2 * Math.PI;
+          ry += sq; rh -= sq;
+        } else if (dir === 2) {
+          // Right square
+          sx = rx + rw - sq; sy = ry;
+          cx = rx + rw - sq; cy = ry; a0 = 0; a1 = 0.5 * Math.PI;
+          rw -= sq;
+        } else {
+          // Bottom square
+          sx = rx; sy = ry + rh - sq;
+          cx = rx + sq; cy = ry + rh - sq; a0 = 0.5 * Math.PI; a1 = Math.PI;
+          rh -= sq;
+        }
+
+        ctx.fillRect(sx, sy, sq, sq);
+        ctx.strokeRect(sx, sy, sq, sq);
+
+        ctx.save();
+        ctx.strokeStyle = "#A6192E";
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, sq, a0, a1);
+        ctx.stroke();
+        ctx.restore();
+      }
+      // Final 1x1 square
+      if (rw > 0.5 && rh > 0.5) {
+        ctx.fillStyle = "#FEF3C7";
+        ctx.strokeStyle = "#92400E";
+        ctx.fillRect(rx, ry, rw, rh);
+        ctx.strokeRect(rx, ry, rw, rh);
+      }
+
+      // Readout on right side of mini-canvas
+      const tx = x0 + rectW + 14;
+      ctx.fillStyle = "#78350F";
+      ctx.font = "bold 12px -apple-system, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText(`Step n = ${step}`, tx, 38);
+      ctx.font = "11.5px -apple-system, sans-serif";
+      ctx.fillText(`Fₙ = ${fn},  Fₙ₋₁ = ${fn1}`, tx, 60);
+      ctx.fillText(`Fₙ / Fₙ₋₁ = ${ratio.toFixed(6)}`, tx, 82);
+      ctx.fillStyle = "#A6192E";
+      ctx.font = "bold 11.5px -apple-system, sans-serif";
+      ctx.fillText(`φ ≈ 1.618034`, tx, 104);
+      ctx.fillStyle = "#15803D";
+      ctx.fillText(`|Error| = ${Math.abs(ratio - GOLDEN_PHI).toExponential(2)}`, tx, 126);
+    }
+
+    document.querySelectorAll(".seq-preset").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".seq-preset").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        seqState.key = btn.getAttribute("data-preset");
+        if (seqState.key === "ex1_3") {
+          seqState.maxN = 9;
+          elSeqMaxN.value = "9";
+        } else if (seqState.maxN < 14) {
+          seqState.maxN = 18;
+          elSeqMaxN.value = "18";
+        }
+        updateSequenceLab();
+      });
+    });
+
+    elSeqEps.addEventListener("input", () => {
+      seqState.eps = parseFloat(elSeqEps.value);
+      updateSequenceLab();
+    });
+
+    elSeqMaxN.addEventListener("input", () => {
+      seqState.maxN = parseInt(elSeqMaxN.value, 10);
+      updateSequenceLab();
+    });
+
+    elSeqInsp.addEventListener("input", () => {
+      seqState.inspectN = parseInt(elSeqInsp.value, 10);
+      updateSequenceLab();
+    });
+
+    elSeqFx.addEventListener("change", () => {
+      seqState.showFx = elSeqFx.checked;
+      drawSequenceCanvas();
+    });
+
+    activeRedrawers.push(() => {
+      drawSequenceCanvas();
+      if (seqState.key === "ex1_4") drawGoldenRectangleCanvas();
+    });
+
+
+    /* -----------------------------------------------------------------------
+       1C. GEOMETRIC PROGRESSION & REPEATING DECIMAL CONVERTER (EX 1.5 & 1.6)
+       ----------------------------------------------------------------------- */
+    const geoState = {
+      a: 0.5,
+      r: 0.5,
+      n: 8
+    };
+
+    const elGeoA = document.getElementById("geo-a");
+    const elGeoR = document.getElementById("geo-r");
+    const elGeoN = document.getElementById("geo-n");
+    const elRepDigits = document.getElementById("rep-digits");
+
+    function partialGeoSum(a, r, n) {
+      if (Math.abs(1 - r) < 1e-12) return a * (n + 1);
+      return (a * (1 - Math.pow(r, n + 1))) / (1 - r);
+    }
+
+    function updateGeometricLab() {
+      elGeoA.value = String(geoState.a);
+      elGeoR.value = String(geoState.r);
+      elGeoN.value = String(geoState.n);
+
+      document.getElementById("geo-a-val").textContent = `a = ${geoState.a.toFixed(2)}`;
+      document.getElementById("geo-r-val").textContent = `r = ${geoState.r.toFixed(2)}`;
+      document.getElementById("geo-n-val").textContent = `n = ${geoState.n}`;
+
+      const sn = partialGeoSum(geoState.a, geoState.r, geoState.n);
+      const converges = Math.abs(geoState.a) < 1e-12 || Math.abs(geoState.r) < 1;
+      const infSum = Math.abs(geoState.a) < 1e-12 ? 0 : converges ? geoState.a / (1 - geoState.r) : NaN;
+
+      document.getElementById("geo-metric-sn").textContent = fmtNum(sn, 6);
+      document.getElementById("geo-metric-sum").textContent = converges ? fmtNum(infSum, 6) : "Diverges";
+      document.getElementById("geo-metric-tail").textContent = converges ? fmtNum(Math.abs(infSum - sn), 6) : "∞";
+
+      const verdEl = document.getElementById("geo-metric-verdict");
+      if (converges) {
+        verdEl.innerHTML = `<span class="status-badge status-ok">|r| = ${Math.abs(geoState.r).toFixed(2)} &lt; 1 Converges</span>`;
+      } else {
+        verdEl.innerHTML = `<span class="status-badge status-bad">|r| = ${Math.abs(geoState.r).toFixed(2)} ≥ 1 Diverges</span>`;
+      }
+
+      const derivEl = document.getElementById("geo-derivation");
+      if (converges) {
+        derivEl.innerHTML = `
+          <h4>Theorem 1.1 Application (Slides 14–15)</h4>
+          <p>With first term \\(a = ${geoState.a.toFixed(2)}\\) and common ratio \\(r = ${geoState.r.toFixed(2)}\\) (\\(|r| < 1\\)), partial sum formula (5) gives:</p>
+          \\[ s_{${geoState.n}} = \\sum_{k=0}^{${geoState.n}} a r^k = \\frac{${geoState.a.toFixed(2)}\\left(1 - (${geoState.r.toFixed(2)})^{${geoState.n + 1}}\\right)}{1 - (${geoState.r.toFixed(2)})} \\approx ${fmtNum(sn, 6)}, \\qquad s = \\lim_{n\\to\\infty} s_n = \\frac{a}{1 - r} = ${fmtNum(infSum, 6)}. \\]`;
+      } else {
+        derivEl.innerHTML = `
+          <h4>Divergence When \\(|r| \\ge 1\\) (Theorem 1.1)</h4>
+          <p>Here \\(|r| = ${Math.abs(geoState.r).toFixed(2)} \\ge 1\\) with \\(a \\neq 0\\), so individual terms \\(a_n = a r^n\\) do not approach \\(0\\). Thus \\(\\{s_n\\}\\) fails to approach a finite limit and the series <strong>diverges</strong>.</p>`;
+      }
+      renderMathIn(derivEl);
+      drawGeometricCanvas();
+    }
+
+    function drawGeometricCanvas() {
+      const canvas = document.getElementById("canvas-geo");
+      const info = setupHiDPICanvas(canvas);
+      if (!info) return;
+      const { ctx, w, h } = info;
+
+      const maxK = 25;
+      const sVals = [];
+      const tVals = [];
+      for (let k = 0; k <= maxK; k++) {
+        sVals.push(partialGeoSum(geoState.a, geoState.r, k));
+        tVals.push(geoState.a * Math.pow(geoState.r, k));
+      }
+
+      const converges = Math.abs(geoState.a) < 1e-12 || Math.abs(geoState.r) < 1;
+      const infSum = Math.abs(geoState.a) < 1e-12 ? 0 : converges ? geoState.a / (1 - geoState.r) : 0;
+
+      let yMin = Math.min(0, ...sVals, ...tVals);
+      let yMax = Math.max(0.2, ...sVals, ...tVals);
+      if (converges) {
+        yMin = Math.min(yMin, infSum);
+        yMax = Math.max(yMax, infSum);
+      }
+      const span = yMax - yMin || 1;
+      yMin -= span * 0.14;
+      yMax += span * 0.14;
+
+      const pad = { l: 56, r: 22, t: 22, b: 32 };
+      const { toX, toY, plotW, plotH } = drawCartesianAxes(ctx, pad, w, h, -0.6, maxK + 0.6, yMin, yMax, "Index k", "sₖ & aₖ", true);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(pad.l, pad.t, plotW, plotH);
+      ctx.clip();
+
+      // Term bars a_k = a * r^k
+      const y0 = toY(0);
+      const barW = Math.max(4, (plotW / (maxK + 2)) * 0.44);
+      for (let k = 0; k <= maxK; k++) {
+        const px = toX(k);
+        const py = toY(tVals[k]);
+        ctx.fillStyle = "rgba(148, 163, 184, 0.38)";
+        ctx.fillRect(px - barW / 2, Math.min(y0, py), barW, Math.abs(py - y0));
+      }
+
+      // Asymptote s = a / (1 - r)
+      if (converges) {
+        const yInf = toY(infSum);
+        ctx.strokeStyle = "#15803D";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([7, 4]);
+        ctx.beginPath();
+        ctx.moveTo(pad.l, yInf);
+        ctx.lineTo(pad.l + plotW, yInf);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = "#15803D";
+        ctx.font = "bold 11.5px -apple-system, sans-serif";
+        ctx.textAlign = "right";
+        ctx.fillText(`Sum a/(1−r) = ${fmtNum(infSum, 4)}`, pad.l + plotW - 8, yInf - 7);
+      }
+
+      // Partial sum curve s_k
+      ctx.strokeStyle = "#A6192E";
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      for (let k = 0; k <= maxK; k++) {
+        const px = toX(k);
+        const py = toY(sVals[k]);
+        if (k === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      // Highlight selected n
+      const selX = toX(geoState.n);
+      const selY = toY(sVals[geoState.n]);
+      if (converges) {
+        ctx.strokeStyle = "#2563EB";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(selX, selY);
+        ctx.lineTo(selX, toY(infSum));
+        ctx.stroke();
+      }
+
+      for (let k = 0; k <= maxK; k++) {
+        const px = toX(k);
+        const py = toY(sVals[k]);
+        ctx.beginPath();
+        ctx.arc(px, py, k === geoState.n ? 6 : 3.8, 0, Math.PI * 2);
+        ctx.fillStyle = k === geoState.n ? "#2563EB" : "#A6192E";
+        ctx.fill();
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function updateRepeatingDecimal() {
+      const cleaned = (elRepDigits.value || "").replace(/\D/g, "").slice(0, 6);
+      if (elRepDigits.value !== cleaned) elRepDigits.value = cleaned;
+
+      const outEl = document.getElementById("rep-output-math");
+      if (!cleaned) {
+        outEl.innerHTML = `Type 1–6 digits above (e.g., <code>17</code> for Exercise 1.6’s \\(0.\\overline{17}\\)).`;
+        renderMathIn(outEl);
+        return;
+      }
+
+      const m = cleaned.length;
+      const numRaw = parseInt(cleaned, 10);
+      const denRaw = Math.pow(10, m) - 1;
+      const g = gcd(numRaw, denRaw);
+      const p = numRaw / g;
+      const q = denRaw / g;
+
+      outEl.innerHTML = `
+        <strong>Exercise 1.6 Method (Slide 16):</strong>
+        \\[ 0.\\overline{${cleaned}} = \\frac{${numRaw}}{10^{${m}}} + \\frac{${numRaw}}{10^{${2 * m}}} + \\cdots = \\frac{${numRaw}/10^{${m}}}{1 - 1/10^{${m}}} = \\frac{${numRaw}}{${denRaw}} = \\mathbf{\\frac{${p}}{${q}}} \\]`;
+      renderMathIn(outEl);
+    }
+
+    document.querySelectorAll(".geo-preset").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".geo-preset").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const p = btn.getAttribute("data-preset");
+        if (p === "ex1_5") {
+          geoState.a = 0.5; geoState.r = 0.5; geoState.n = 8;
+        } else if (p === "ex1_6") {
+          geoState.a = 0.17; geoState.r = 0.01; geoState.n = 3;
+          elRepDigits.value = "17";
+          updateRepeatingDecimal();
+        } else if (p === "alt_geo") {
+          geoState.a = 1.0; geoState.r = -0.6; geoState.n = 7;
+        } else if (p === "div_geo") {
+          geoState.a = 0.4; geoState.r = 1.12; geoState.n = 10;
+        }
+        updateGeometricLab();
+      });
+    });
+
+    elGeoA.addEventListener("input", () => {
+      geoState.a = parseFloat(elGeoA.value);
+      updateGeometricLab();
+    });
+    elGeoR.addEventListener("input", () => {
+      geoState.r = parseFloat(elGeoR.value);
+      updateGeometricLab();
+    });
+    elGeoN.addEventListener("input", () => {
+      geoState.n = parseInt(elGeoN.value, 10);
+      updateGeometricLab();
+    });
+
+    elRepDigits.addEventListener("input", updateRepeatingDecimal);
+    document.querySelectorAll(".rep-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".rep-chip").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        elRepDigits.value = chip.getAttribute("data-digits");
+        updateRepeatingDecimal();
+      });
+    });
+
+    activeRedrawers.push(drawGeometricCanvas);
+
+
+    /* -----------------------------------------------------------------------
+       2. POWER SERIES, TERM-BY-TERM CALCULUS & ENDPOINT INSPECTOR (SLIDES 22–25)
+       ----------------------------------------------------------------------- */
+    const psState = {
+      mode: "ps_deriv", // "ps_deriv" (Ex 2.1), "ps_base" (Eq 7), "ps_integ", "ps_shifted"
+      N: 5,
+      x0: 0.5,
+      c: 0.0,
+      R: 1.0
+    };
+
+    const elPsDeg = document.getElementById("ps-deg");
+    const elPsX0 = document.getElementById("ps-x0");
+    const elPsC = document.getElementById("ps-c");
+    const elPsR = document.getElementById("ps-R");
+
+    function getPsConfig() {
+      if (psState.mode === "ps_deriv") {
+        return {
+          c: 0,
+          R: 1,
+          leftConv: false,
+          rightConv: false,
+          iocText: "(-1, 1)",
+          exactFn: (x) => (x >= 1 ? NaN : 1 / Math.pow(1 - x, 2)),
+          partialFn: (x, N) => {
+            let s = 0;
+            for (let n = 1; n <= N; n++) s += n * Math.pow(x, n - 1);
+            return s;
+          },
+          derivationHtml: `
+            <h4>Worked Solution — Exercise 2.1 (Slide 25): \\(\\sum_{n=1}^{\\infty} n x^{n-1}\\)</h4>
+            <p>Start with Eq. (7): \\(\\dfrac{1}{1 - x} = \\sum_{n=0}^{\\infty} x^n\\) for \\(|x| < 1\\). Applying <strong>Theorem 2.1</strong> (term-by-term differentiation):</p>
+            \\[ \\frac{d}{dx}\\!\\left(\\frac{1}{1 - x}\\right) = \\frac{1}{(1 - x)^2} = \\sum_{n=1}^{\\infty} n x^{n-1} = 1 + 2x + 3x^2 + 4x^3 + \\cdots \\quad \\text{for } -1 < x < 1. \\]
+            <p><strong>Individual Endpoint Check:</strong> At \\(x = 1\\), \\(1 + 2 + 3 + \\cdots\\) diverges (\\(a_n = n \\not\\to 0\\)). At \\(x = -1\\), \\(1 - 2 + 3 - 4 + \\cdots\\) also diverges (\\((-1)^{n-1}n \\not\\to 0\\)). Interval of convergence: \\((-1, 1)\\).</p>`
+        };
+      }
+      if (psState.mode === "ps_base") {
+        return {
+          c: 0,
+          R: 1,
+          leftConv: false,
+          rightConv: false,
+          iocText: "(-1, 1)",
+          exactFn: (x) => (Math.abs(1 - x) < 1e-9 ? NaN : 1 / (1 - x)),
+          partialFn: (x, N) => {
+            let s = 0;
+            for (let n = 0; n <= N; n++) s += Math.pow(x, n);
+            return s;
+          },
+          derivationHtml: `
+            <h4>Geometric Power Series — Equation (7) (Slides 22–23)</h4>
+            <p>Replacing \\(r\\) with \\(x\\) in Theorem 1.1 gives \\(\\displaystyle \\sum_{n=0}^{\\infty} x^n = \\frac{1}{1 - x}\\) whenever \\(|x| < 1\\).</p>
+            <p><strong>Endpoint Check:</strong> At \\(x = 1\\), \\(1 + 1 + 1 + \\cdots\\) diverges; at \\(x = -1\\), \\(1 - 1 + 1 - 1 + \\cdots\\) oscillates between \\(1\\) and \\(0\\), so both endpoints diverge!</p>`
+        };
+      }
+      if (psState.mode === "ps_integ") {
+        return {
+          c: 0,
+          R: 1,
+          leftConv: true,
+          rightConv: false,
+          iocText: "[-1, 1)",
+          exactFn: (x) => (x >= 1 ? NaN : -Math.log(1 - x)),
+          partialFn: (x, N) => {
+            let s = 0;
+            for (let n = 1; n <= N; n++) s += Math.pow(x, n) / n;
+            return s;
+          },
+          derivationHtml: `
+            <h4>Term-by-Term Integration — Theorem 2.1 Endpoint Contrast!</h4>
+            <p>Integrating \\(\\dfrac{1}{1 - t} = \\sum_{n=0}^{\\infty} t^n\\) from \\(0\\) to \\(x\\) yields \\(-\\ln(1 - x) = \\sum_{n=1}^{\\infty} \\dfrac{x^n}{n} = x + \\dfrac{x^2}{2} + \\dfrac{x^3}{3} + \\cdots\\) on \\((-1, 1)\\).</p>
+            <p><strong>Why Theorem 2.1 warns about endpoints:</strong> At \\(x = +1\\), the harmonic series \\(\\sum \\frac{1}{n}\\) <em>diverges</em>; but at \\(x = -1\\), the alternating harmonic series \\(-1 + \\frac{1}{2} - \\frac{1}{3} + \\cdots = -\\ln 2\\) <strong>gains convergence</strong>! Interval: \\([-1, 1)\\).</p>`
+        };
+      }
+      // Shifted (c, R)
+      const c = psState.c;
+      const R = psState.R;
+      return {
+        c,
+        R,
+        leftConv: false,
+        rightConv: false,
+        iocText: `(${(c - R).toFixed(2)}, ${(c + R).toFixed(2)})`,
+        exactFn: (x) => {
+          const u = (x - c) / R;
+          return Math.abs(1 - u) < 1e-9 ? NaN : 1 / (1 - u);
+        },
+        partialFn: (x, N) => {
+          const u = (x - c) / R;
+          let s = 0;
+          for (let n = 0; n <= N; n++) s += Math.pow(u, n);
+          return s;
+        },
+        derivationHtml: `
+          <h4>Shifted Power Series About Center \\(c = ${c.toFixed(1)}\\) with Radius \\(R = ${R.toFixed(1)}\\)</h4>
+          <p>\\(\\displaystyle \\sum_{n=0}^{\\infty} \\frac{(x - ${c.toFixed(1)})^n}{${R.toFixed(1)}^n} = \\frac{1}{1 - (x - ${c.toFixed(1)})/${R.toFixed(1)}}\\) converges whenever \\(\\left|\\frac{x - c}{R}\\right| < 1 \\iff |x - (${c.toFixed(1)})| < ${R.toFixed(1)}\\), i.e., \\(x \\in (${(c - R).toFixed(2)}, ${(c + R).toFixed(2)})\\).</p>`
+      };
+    }
+
+    function updatePowerSeriesLab() {
+      const cfg = getPsConfig();
+      const xMinSlider = Number((cfg.c - cfg.R * 1.4).toFixed(2));
+      const xMaxSlider = Number((cfg.c + cfg.R * 1.4).toFixed(2));
+      elPsX0.min = String(xMinSlider);
+      elPsX0.max = String(xMaxSlider);
+      if (psState.x0 < xMinSlider) psState.x0 = xMinSlider;
+      if (psState.x0 > xMaxSlider) psState.x0 = xMaxSlider;
+      elPsX0.value = String(psState.x0);
+
+      document.getElementById("ps-deg-val").textContent = `N = ${psState.N}`;
+      document.getElementById("ps-x0-val").textContent = `x = ${psState.x0.toFixed(2)}`;
+      document.getElementById("ps-c-val").textContent = `c = ${psState.c.toFixed(1)}`;
+      document.getElementById("ps-R-val").textContent = `R = ${psState.R.toFixed(1)}`;
+
+      document.getElementById("ps-shift-controls").classList.toggle("hidden", psState.mode !== "ps_shifted");
+
+      const dist = Math.abs(psState.x0 - cfg.c);
+      const atLeft = Math.abs(psState.x0 - (cfg.c - cfg.R)) < 1e-6;
+      const atRight = Math.abs(psState.x0 - (cfg.c + cfg.R)) < 1e-6;
+      const convHere = dist < cfg.R - 1e-6 || (atLeft && cfg.leftConv) || (atRight && cfg.rightConv);
+
+      const exactVal = cfg.exactFn(psState.x0);
+      const approxVal = cfg.partialFn(psState.x0, psState.N);
+
+      document.getElementById("ps-metric-ioc").textContent = cfg.iocText;
+      document.getElementById("ps-metric-exact").textContent = Number.isFinite(exactVal) ? fmtNum(exactVal, 6) : "Asymptote / ∞";
+      document.getElementById("ps-metric-approx").textContent = fmtNum(approxVal, 6);
+
+      const errEl = document.getElementById("ps-metric-err");
+      if (convHere && Number.isFinite(exactVal)) {
+        errEl.innerHTML = `<span class="status-badge status-ok">|Err| = ${fmtNum(Math.abs(exactVal - approxVal), 5)}</span>`;
+      } else if (atLeft || atRight) {
+        errEl.innerHTML = `<span class="status-badge status-warn">Endpoint Diverges!</span>`;
+      } else {
+        errEl.innerHTML = `<span class="status-badge status-bad">|x−c| &gt; R Diverges</span>`;
+      }
+
+      const derivEl = document.getElementById("ps-derivation");
+      derivEl.innerHTML = cfg.derivationHtml;
+      renderMathIn(derivEl);
+
+      drawPowerSeriesCanvas();
+      drawPsEndpointsCanvas();
+    }
+
+    function drawPowerSeriesCanvas() {
+      const canvas = document.getElementById("canvas-power");
+      const info = setupHiDPICanvas(canvas);
+      if (!info) return;
+      const { ctx, w, h } = info;
+      const cfg = getPsConfig();
+
+      const xMin = cfg.c - cfg.R * 1.45;
+      const xMax = cfg.c + cfg.R * 1.45;
+      const yMin = psState.mode === "ps_deriv" ? -2.5 : -3.0;
+      const yMax = psState.mode === "ps_deriv" ? 10.0 : 5.5;
+
+      const pad = { l: 50, r: 20, t: 22, b: 32 };
+      const { toX, toY, plotW, plotH } = drawCartesianAxes(ctx, pad, w, h, xMin, xMax, yMin, yMax, "x", "y", false);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(pad.l, pad.t, plotW, plotH);
+      ctx.clip();
+
+      // Shaded Interval of Convergence (c - R, c + R)
+      const xL = toX(cfg.c - cfg.R);
+      const xR = toX(cfg.c + cfg.R);
+      ctx.fillStyle = "rgba(21, 128, 61, 0.09)";
+      ctx.fillRect(xL, pad.t, xR - xL, plotH);
+
+      ctx.strokeStyle = "#15803D";
+      ctx.lineWidth = 1.4;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(xL, pad.t);
+      ctx.lineTo(xL, pad.t + plotH);
+      ctx.moveTo(xR, pad.t);
+      ctx.lineTo(xR, pad.t + plotH);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = "#15803D";
+      ctx.font = "bold 11px -apple-system, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(`Interval of Convergence |x − ${cfg.c.toFixed(1)}| < ${cfg.R.toFixed(1)}`, (xL + xR) / 2, pad.t + 15);
+
+      // Exact non-series function f(x)
+      ctx.strokeStyle = "#1D4ED8";
+      ctx.lineWidth = 2.6;
+      ctx.beginPath();
+      let penDown = false;
+      const samples = 300;
+      for (let i = 0; i <= samples; i++) {
+        const xv = xMin + ((xMax - xMin) * i) / samples;
+        const yv = cfg.exactFn(xv);
+        if (!Number.isFinite(yv) || Math.abs(yv) > 40) {
+          penDown = false;
+          continue;
+        }
+        const px = toX(xv);
+        const py = toY(yv);
+        if (!penDown) {
+          ctx.moveTo(px, py);
+          penDown = true;
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+      ctx.stroke();
+
+      // Partial sum polynomial S_N(x)
+      ctx.strokeStyle = "#DC2626";
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      penDown = false;
+      for (let i = 0; i <= samples; i++) {
+        const xv = xMin + ((xMax - xMin) * i) / samples;
+        const yv = cfg.partialFn(xv, psState.N);
+        if (!Number.isFinite(yv) || Math.abs(yv) > 45) {
+          penDown = false;
+          continue;
+        }
+        const px = toX(xv);
+        const py = toY(yv);
+        if (!penDown) {
+          ctx.moveTo(px, py);
+          penDown = true;
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+      ctx.stroke();
+
+      // Endpoint circles on x-axis (filled if convergent, hollow if divergent)
+      const yAxisPx = toY(0);
+      [
+        { x: cfg.c - cfg.R, conv: cfg.leftConv },
+        { x: cfg.c + cfg.R, conv: cfg.rightConv }
+      ].forEach((ep) => {
+        ctx.beginPath();
+        ctx.arc(toX(ep.x), yAxisPx, 5.5, 0, Math.PI * 2);
+        ctx.fillStyle = ep.conv ? "#15803D" : "#FFFFFF";
+        ctx.fill();
+        ctx.strokeStyle = ep.conv ? "#15803D" : "#DC2626";
+        ctx.lineWidth = 2.2;
+        ctx.stroke();
+      });
+
+      // Probe point x0 markers
+      const px0 = toX(psState.x0);
+      const exY = cfg.exactFn(psState.x0);
+      const apY = cfg.partialFn(psState.x0, psState.N);
+      if (Number.isFinite(exY) && Number.isFinite(apY)) {
+        ctx.strokeStyle = "#7C3AED";
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.moveTo(px0, toY(exY));
+        ctx.lineTo(px0, toY(apY));
+        ctx.stroke();
+      }
+      if (Number.isFinite(apY)) {
+        ctx.beginPath();
+        ctx.arc(px0, toY(apY), 5.5, 0, Math.PI * 2);
+        ctx.fillStyle = "#DC2626";
+        ctx.fill();
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+
+      // Legend
+      ctx.fillStyle = "rgba(255,255,255,0.9)";
+      ctx.fillRect(pad.l + 8, pad.t + 24, 178, 42);
+      ctx.strokeStyle = "#CBD5E1";
+      ctx.strokeRect(pad.l + 8, pad.t + 24, 178, 42);
+      ctx.font = "bold 11px -apple-system, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#1D4ED8";
+      ctx.fillText("━━ Exact Non-Series f(x)", pad.l + 15, pad.t + 40);
+      ctx.fillStyle = "#DC2626";
+      ctx.fillText(`━━ Partial Sum S_${psState.N}(x)`, pad.l + 15, pad.t + 57);
+
+      ctx.restore();
+    }
+
+    function drawPsEndpointsCanvas() {
+      const canvas = document.getElementById("canvas-ps-endpoints");
+      const info = setupHiDPICanvas(canvas);
+      if (!info) return;
+      const { ctx, w, h } = info;
+      const cfg = getPsConfig();
+
+      const maxK = 16;
+      const leftSeq = [];
+      const rightSeq = [];
+      for (let k = 1; k <= maxK; k++) {
+        leftSeq.push(cfg.partialFn(cfg.c - cfg.R, k));
+        rightSeq.push(cfg.partialFn(cfg.c + cfg.R, k));
+      }
+
+      const allVals = [...leftSeq, ...rightSeq, 0];
+      let yMin = Math.min(...allVals);
+      let yMax = Math.max(...allVals);
+      const span = yMax - yMin || 1;
+      yMin -= span * 0.16;
+      yMax += span * 0.16;
+
+      const pad = { l: 42, r: 14, t: 18, b: 26 };
+      const { toX, toY } = drawCartesianAxes(ctx, pad, w, h, 0.5, maxK + 0.5, yMin, yMax, "N", "S_N", true);
+
+      // Left endpoint curve
+      ctx.strokeStyle = cfg.leftConv ? "#15803D" : "#D97706";
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      leftSeq.forEach((v, idx) => {
+        const px = toX(idx + 1);
+        const py = toY(v);
+        if (idx === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      });
+      ctx.stroke();
+
+      // Right endpoint curve
+      ctx.strokeStyle = "#DC2626";
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      rightSeq.forEach((v, idx) => {
+        const px = toX(idx + 1);
+        const py = toY(v);
+        if (idx === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      });
+      ctx.stroke();
+
+      ctx.font = "bold 10.5px -apple-system, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillStyle = cfg.leftConv ? "#15803D" : "#B45309";
+      ctx.fillText(`● c−R (${cfg.leftConv ? "Conv" : "Div"})`, pad.l + 8, pad.t + 13);
+      ctx.fillStyle = "#DC2626";
+      ctx.fillText(`● c+R (Div)`, pad.l + 102, pad.t + 13);
+    }
+
+    document.querySelectorAll(".ps-mode").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".ps-mode").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        psState.mode = btn.getAttribute("data-mode");
+        const cfg = getPsConfig();
+        psState.x0 = cfg.c + cfg.R * 0.5;
+        updatePowerSeriesLab();
+      });
+    });
+
+    elPsDeg.addEventListener("input", () => {
+      psState.N = parseInt(elPsDeg.value, 10);
+      updatePowerSeriesLab();
+    });
+    elPsX0.addEventListener("input", () => {
+      psState.x0 = parseFloat(elPsX0.value);
+      updatePowerSeriesLab();
+    });
+    elPsC.addEventListener("input", () => {
+      psState.c = parseFloat(elPsC.value);
+      updatePowerSeriesLab();
+    });
+    elPsR.addEventListener("input", () => {
+      psState.R = parseFloat(elPsR.value);
+      updatePowerSeriesLab();
+    });
+
+    document.getElementById("ps-jump-left").addEventListener("click", () => {
+      const cfg = getPsConfig();
+      psState.x0 = cfg.c - cfg.R;
+      updatePowerSeriesLab();
+    });
+    document.getElementById("ps-jump-mid").addEventListener("click", () => {
+      const cfg = getPsConfig();
+      psState.x0 = cfg.c + cfg.R * 0.5;
+      updatePowerSeriesLab();
+    });
+    document.getElementById("ps-jump-right").addEventListener("click", () => {
+      const cfg = getPsConfig();
+      psState.x0 = cfg.c + cfg.R;
+      updatePowerSeriesLab();
+    });
+
+    activeRedrawers.push(() => {
+      drawPowerSeriesCanvas();
+      drawPsEndpointsCanvas();
+    });
+
+    // === END OF PART 2 (Modules 3 & 4 JS + Init follow in Part 3) ===
