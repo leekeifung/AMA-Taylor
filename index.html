@@ -3309,3 +3309,1388 @@
     });
 
     // === END OF PART 2 (Modules 3 & 4 JS + Init follow in Part 3) ===
+    /* -----------------------------------------------------------------------
+       0B. POLYFILL GUARD & DEFENSIVE QUIZ COMPONENT STYLES
+       ----------------------------------------------------------------------- */
+    if (typeof CanvasRenderingContext2D !== "undefined" && !CanvasRenderingContext2D.prototype.roundRect) {
+      CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+        const rad = Math.min(typeof r === "number" ? r : 6, w / 2, h / 2);
+        this.moveTo(x + rad, y);
+        this.arcTo(x + w, y, x + w, y + h, rad);
+        this.arcTo(x + w, y + h, x, y + h, rad);
+        this.arcTo(x, y + h, x, y, rad);
+        this.arcTo(x, y, x + w, y, rad);
+        this.closePath();
+        return this;
+      };
+    }
+
+    (function injectQuizCardStyles() {
+      const styleEl = document.createElement("style");
+      styleEl.textContent = `
+        .quiz-card-box {
+          background: #FFFFFF;
+          border: 1px solid #E2E8F0;
+          border-top: 4px solid #A6192E;
+          border-radius: 12px;
+          padding: 1.15rem 1.25rem;
+          box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+          display: flex;
+          flex-direction: column;
+          gap: 0.85rem;
+        }
+        .quiz-card-meta {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+        .quiz-q-badge {
+          font-size: 0.76rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          color: #A6192E;
+          background: #FEF2F2;
+          border: 1px solid #FECACA;
+          padding: 0.2rem 0.6rem;
+          border-radius: 999px;
+        }
+        .quiz-topic-tag {
+          font-size: 0.76rem;
+          color: #64748B;
+          font-weight: 600;
+        }
+        .quiz-prompt-text {
+          font-size: 0.95rem;
+          line-height: 1.55;
+          color: #0F172A;
+          font-weight: 500;
+        }
+        .quiz-opts-list {
+          display: grid;
+          gap: 0.5rem;
+        }
+        .quiz-opt-btn {
+          display: flex;
+          align-items: flex-start;
+          gap: 0.65rem;
+          width: 100%;
+          text-align: left;
+          background: #F8FAFC;
+          border: 1.5px solid #CBD5E1;
+          border-radius: 8px;
+          padding: 0.6rem 0.8rem;
+          font-size: 0.9rem;
+          line-height: 1.45;
+          color: #1E293B;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .quiz-opt-btn:hover:not(:disabled) {
+          border-color: #A6192E;
+          background: #FFF5F5;
+        }
+        .quiz-opt-letter {
+          flex-shrink: 0;
+          width: 1.5rem;
+          height: 1.5rem;
+          border-radius: 50%;
+          background: #E2E8F0;
+          color: #334155;
+          font-weight: 700;
+          font-size: 0.78rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 0.05rem;
+        }
+        .quiz-opt-btn.is-correct {
+          background: #F0FDF4;
+          border-color: #15803D;
+          color: #14532D;
+          font-weight: 600;
+        }
+        .quiz-opt-btn.is-correct .quiz-opt-letter {
+          background: #15803D;
+          color: #FFFFFF;
+        }
+        .quiz-opt-btn.is-wrong {
+          background: #FEF2F2;
+          border-color: #DC2626;
+          color: #7F1D1D;
+        }
+        .quiz-opt-btn.is-wrong .quiz-opt-letter {
+          background: #DC2626;
+          color: #FFFFFF;
+        }
+        .quiz-opt-btn:disabled {
+          cursor: default;
+        }
+        .quiz-exp-box {
+          background: #FFFBEB;
+          border-left: 4px solid #D97706;
+          border-radius: 6px;
+          padding: 0.75rem 0.95rem;
+          font-size: 0.88rem;
+          line-height: 1.55;
+          color: #1E293B;
+        }
+      `;
+      document.head.appendChild(styleEl);
+    })();
+
+
+    /* -----------------------------------------------------------------------
+       3A. TAYLOR & MACLAURIN STUDIO + LAGRANGE REMAINDER EXPLORER (SLIDES 26–38)
+       ----------------------------------------------------------------------- */
+    // Exact polynomial coefficients Q_k(u) where d^k/dx^k [e^(-1/x^2)] = Q_k(1/x) * e^(-1/x^2)
+    // Recurrence: Q_0(u) = 1, Q_{k+1}(u) = 2*u^3*Q_k(u) - u^2*Q_k'(u)
+    const CAUCHY_POLY = [[1]];
+    for (let k = 0; k < 15; k++) {
+      const prev = CAUCHY_POLY[k];
+      const next = new Array(prev.length + 3).fill(0);
+      for (let d = 0; d < prev.length; d++) {
+        const coeff = prev[d];
+        if (coeff === 0) continue;
+        next[d + 3] += 2 * coeff;
+        if (d >= 1) next[d + 1] -= d * coeff;
+      }
+      CAUCHY_POLY.push(next);
+    }
+
+    function evalCauchyDeriv(order, x) {
+      if (Math.abs(x) < 0.038) return 0; // Underflows below 1e-300 smoothly
+      const u = 1 / x;
+      const eTerm = Math.exp(-u * u);
+      if (eTerm === 0) return 0;
+      const poly = CAUCHY_POLY[order];
+      let sum = 0;
+      for (let d = poly.length - 1; d >= 0; d--) {
+        sum = sum * u + poly[d];
+      }
+      return sum * eTerm;
+    }
+
+    const TAYLOR_PRESETS = {
+      sin: {
+        name: "\\sin x",
+        defaultC: 0.0,
+        defaultX: 1.2,
+        defaultN: 5,
+        lockC: false,
+        xWindow: [-4.5, 4.5],
+        yWindow: [-2.2, 2.2],
+        iocFn: () => [-Infinity, Infinity],
+        fx: (x) => Math.sin(x),
+        deriv: (k, c) => Math.sin(c + (k * Math.PI) / 2),
+        lagrangeBound: (n, c, x) => Math.pow(Math.abs(x - c), n + 1) / factorial(n + 1),
+        derivation: (n, c, x, err, bound) => `
+          <h4>Worked Analysis — Exercises 3.1 &amp; 3.3 (Slides 29, 34–35): \\(f(x) = \\sin x\\)</h4>
+          <p>The derivatives cycle modulo 4: \\((\\sin x)' = \\cos x,\\; (\\sin x)'' = -\\sin x,\\; (\\sin x)''' = -\\cos x,\\; (\\sin x)^{(4)} = \\sin x\\). ${
+            Math.abs(c) < 1e-9
+              ? `At \\(c = 0\\), even-order derivatives vanish while odd-order derivatives alternate \\(1, -1, 1, -1, \\dots\\), yielding Maclaurin’s series \\(\\sum_{m=0}^{\\infty} \\frac{(-1)^m x^{2m+1}}{(2m+1)!}\\).`
+              : `Expanded about \\(c = ${c.toFixed(1)}\\), both \\(\\sin c\\) and \\(\\cos c\\) powers of \\((x - ${c.toFixed(1)})\\) appear.`
+          }</p>
+          <p><strong>Convergence Proof via Theorem 3.1 (Ex 3.3):</strong> Since \\(|f^{(n+1)}(\\xi)| = |\\sin(\\xi + \\frac{(n+1)\\pi}{2})| \\le 1\\) for every \\(\\xi \\in \\mathbb{R}\\),</p>
+          \\[ |R_{${n}}(${x.toFixed(2)})| = \\left|\\frac{f^{(${n + 1})}(\\xi)}{(${n + 1})!}(${x.toFixed(2)} - ${c.toFixed(1)})^{${n + 1}}\\right| \\le \\frac{|${(x - c).toFixed(2)}|^{${n + 1}}}{${n + 1}!} \\approx ${fmtNum(bound, 5)} \\xrightarrow{n\\to\\infty} 0 \\quad (\\text{actual } |R_{${n}}| \\approx ${fmtNum(err, 5)}). \\]`
+      },
+      one_over_x: {
+        name: "\\frac{1}{x}",
+        defaultC: 2.0,
+        defaultX: 1.2,
+        defaultN: 4,
+        lockC: false,
+        xWindow: [-0.8, 4.8],
+        yWindow: [-1.0, 4.0],
+        iocFn: (c) => (c > 0 ? [0, 2 * c] : [2 * c, 0]),
+        fx: (x) => (Math.abs(x) < 1e-6 ? NaN : 1 / x),
+        deriv: (k, c) => ((k % 2 === 0 ? 1 : -1) * factorial(k)) / Math.pow(c, k + 1),
+        lagrangeBound: (n, c, x) => {
+          if (c * x <= 0) return NaN; // Crosses singularity x = 0
+          const minAbs = Math.min(Math.abs(c), Math.abs(x));
+          return Math.pow(Math.abs(x - c), n + 1) / Math.pow(minAbs, n + 2);
+        },
+        derivation: (n, c, x, err, bound) => `
+          <h4>Worked Solution — Exercise 3.2 (Slide 30): \\(f(x) = \\frac{1}{x}\\) at \\(c = ${c.toFixed(1)}\\)</h4>
+          <p>Repeated differentiation gives \\(f^{(k)}(x) = (-1)^k k!\\,x^{-(k+1)}\\), so the Taylor coefficients at \\(c = ${c.toFixed(1)}\\) are \\(a_k = \\dfrac{f^{(k)}(c)}{k!} = \\dfrac{(-1)^k}{(${c.toFixed(1)})^{k+1}}\\).</p>
+          <p>${
+            Math.abs(c - 2) < 1e-9
+              ? `At \\(c = 2\\), \\(\\dfrac{1}{x} = \\sum_{k=0}^{\\infty} \\dfrac{(-1)^k}{2^{k+1}}(x - 2)^k = \\dfrac{1}{2} - \\dfrac{x-2}{4} + \\dfrac{(x-2)^2}{8} - \\cdots\\), a geometric series with ratio \\(r = -\\frac{x-2}{2}\\) converging on \\((0, 4)\\)!`
+              : `This geometric power series has radius \\(R = |c| = ${Math.abs(c).toFixed(1)}\\) (distance from \\(c\\) to the asymptote \\(x = 0\\)).`
+          } ${
+            Number.isFinite(bound)
+              ? `Lagrange bound on \\([\\min(c,x), \\max(c,x)]\\): \\(|R_{${n}}(${x.toFixed(2)})| \\le ${fmtNum(bound, 5)}\\).`
+              : `<strong style="color:#DC2626;">Note:</strong> \\(x = ${x.toFixed(2)}\\) and \\(c = ${c.toFixed(1)}\\) straddle the discontinuity \\(x = 0\\), so Theorem 3.1 does not apply across \\(0\\)!`
+          }</p>`
+      },
+      cos: {
+        name: "\\cos x",
+        defaultC: 0.0,
+        defaultX: 1.2,
+        defaultN: 4,
+        lockC: false,
+        xWindow: [-4.5, 4.5],
+        yWindow: [-2.2, 2.2],
+        iocFn: () => [-Infinity, Infinity],
+        fx: (x) => Math.cos(x),
+        deriv: (k, c) => Math.cos(c + (k * Math.PI) / 2),
+        lagrangeBound: (n, c, x) => Math.pow(Math.abs(x - c), n + 1) / factorial(n + 1),
+        derivation: (n, c, x, err, bound) => `
+          <h4>Taylor / Maclaurin Expansion of \\(f(x) = \\cos x\\)</h4>
+          <p>Since \\(|f^{(n+1)}(\\xi)| = |\\cos(\\xi + \\frac{(n+1)\\pi}{2})| \\le 1\\), Theorem 3.1 guarantees \\(|R_{${n}}(${x.toFixed(2)})| \\le \\dfrac{|${(x - c).toFixed(2)}|^{${n + 1}}}{${n + 1}!} \\approx ${fmtNum(bound, 5)}\\) (actual \\(|R_{${n}}| \\approx ${fmtNum(err, 5)}\\)). Thus the Taylor series converges to \\(\\cos x\\) for all \\(x \\in \\mathbb{R}\\).</p>`
+      },
+      exp: {
+        name: "e^x",
+        defaultC: 0.0,
+        defaultX: 1.2,
+        defaultN: 5,
+        lockC: false,
+        xWindow: [-3.5, 3.5],
+        yWindow: [-1.5, 14.0],
+        iocFn: () => [-Infinity, Infinity],
+        fx: (x) => Math.exp(x),
+        deriv: (_k, c) => Math.exp(c),
+        lagrangeBound: (n, c, x) => (Math.exp(Math.max(c, x)) * Math.pow(Math.abs(x - c), n + 1)) / factorial(n + 1),
+        derivation: (n, c, x, err, bound) => `
+          <h4>Taylor / Maclaurin Expansion of \\(f(x) = e^x\\)</h4>
+          <p>Every derivative satisfies \\(f^{(k)}(x) = e^x\\), so \\(a_k = \\dfrac{e^{${c.toFixed(1)}}}{k!}\\). Because \\(e^\\xi\\) is strictly increasing, \\(\\max_{\\xi \\text{ between } c, x} e^\\xi = e^{\\max(c,x)} = e^{${Math.max(c, x).toFixed(2)}}\\), giving:</p>
+          \\[ |R_{${n}}(${x.toFixed(2)})| \\le \\frac{e^{${Math.max(c, x).toFixed(2)}}}{( ${n + 1} )!} |${(x - c).toFixed(2)}|^{${n + 1}} \\approx ${fmtNum(bound, 5)} \\xrightarrow{n\\to\\infty} 0 \\quad \\forall x \\in \\mathbb{R}. \\]`
+      },
+      ln1px: {
+        name: "\\ln(1+x)",
+        defaultC: 0.0,
+        defaultX: 0.65,
+        defaultN: 5,
+        lockC: false,
+        xWindow: [-1.3, 3.2],
+        yWindow: [-3.0, 2.2],
+        iocFn: (c) => [-1, 1 + 2 * c],
+        fx: (x) => (x <= -1 ? NaN : Math.log(1 + x)),
+        deriv: (k, c) => {
+          if (k === 0) return Math.log(1 + c);
+          const sign = k % 2 === 1 ? 1 : -1;
+          return (sign * factorial(k - 1)) / Math.pow(1 + c, k);
+        },
+        lagrangeBound: (n, c, x) => {
+          if (x <= -1 || c <= -1) return NaN;
+          const m = Math.min(1 + c, 1 + x);
+          return Math.pow(Math.abs(x - c), n + 1) / ((n + 1) * Math.pow(m, n + 1));
+        },
+        derivation: (n, c, x, err, bound) => `
+          <h4>Logarithmic Series: \\(f(x) = \\ln(1 + x)\\)</h4>
+          <p>For \\(k \\ge 1\\), \\(f^{(k)}(x) = \\dfrac{(-1)^{k-1}(k-1)!}{(1+x)^k}\\), so at \\(c = 0\\) we obtain \\(x - \\frac{x^2}{2} + \\frac{x^3}{3} - \\frac{x^4}{4} + \\cdots\\) with radius \\(R = 1 + c = ${(1 + c).toFixed(1)}\\) (distance to the vertical asymptote \\(x = -1\\)). ${
+            Number.isFinite(bound)
+              ? `Lagrange bound: \\(|R_{${n}}(${x.toFixed(2)})| \\le ${fmtNum(bound, 5)}\\).`
+              : `Point \\(x \\le -1\\) lies outside the domain of \\(\\ln(1+x)\\).`
+          }</p>`
+      },
+      cauchy: {
+        name: "e^{-1/x^2}",
+        defaultC: 0.0,
+        defaultX: 1.0,
+        defaultN: 7,
+        lockC: true,
+        xWindow: [-3.2, 3.2],
+        yWindow: [-0.25, 1.15],
+        iocFn: () => [-Infinity, Infinity],
+        fx: (x) => (Math.abs(x) < 0.038 ? 0 : Math.exp(-1 / (x * x))),
+        deriv: () => 0, // At c = 0, every derivative f^(k)(0) = 0!
+        lagrangeBound: (n, _c, x) => {
+          const absX = Math.abs(x);
+          if (absX < 1e-6) return 0;
+          let maxD = 0;
+          const samples = 240;
+          for (let i = 1; i <= samples; i++) {
+            const xi = (absX * i) / samples;
+            const dVal = Math.abs(evalCauchyDeriv(n + 1, xi));
+            if (dVal > maxD) maxD = dVal;
+          }
+          return (maxD * Math.pow(absX, n + 1)) / factorial(n + 1);
+        },
+        derivation: (n, _c, x, err, bound) => `
+          <h4>⚠️ Slide 28 Classic Counterexample: \\(f(x) = e^{-1/x^2}\\) (\\(x \\neq 0\\)), \\(f(0) = 0\\)</h4>
+          <p>Using L’Hôpital’s rule repeatedly as \\(x \\to 0\\), one proves \\(f^{(k)}(0) = 0\\) for <strong>all</strong> \\(k = 0, 1, 2, \\dots\\)! Consequently, every Maclaurin polynomial is identically zero: \\(P_{${n}}(x) \\equiv 0\\).</p>
+          <p><strong>Why doesn’t \\(P_n(x) \\to f(x)\\)?</strong> For \\(x = ${x.toFixed(2)} \\neq 0\\), the remainder \\(R_n(${x.toFixed(2)}) = f(${x.toFixed(2)}) - 0 = e^{-1/${(x * x).toFixed(4)}} \\approx ${fmtNum(err, 6)}\\) stays <em>strictly positive</em> as \\(n \\to \\infty\\) (notice how \\(\\max_\\xi |f^{(${n + 1})}(\\xi)|\\) explodes, pushing the Lagrange bound to \\(${fmtNum(bound, 4)}\\)). Smoothness alone does not imply analyticity!</p>`
+      }
+    };
+
+    const tayState = {
+      fnKey: "sin",
+      n: 5,
+      c: 0.0,
+      x: 1.2,
+      showRem: true
+    };
+
+    const elTayN = document.getElementById("tay-n");
+    const elTayC = document.getElementById("tay-c");
+    const elTayX = document.getElementById("tay-x");
+    const elTayShowRem = document.getElementById("tay-show-rem");
+
+    function evalTaylorPoly(cfg, n, c, x) {
+      let sum = 0;
+      const dx = x - c;
+      for (let k = 0; k <= n; k++) {
+        const ak = cfg.deriv(k, c) / factorial(k);
+        sum += ak * Math.pow(dx, k);
+      }
+      return sum;
+    }
+
+    function buildPolynomialLatex(cfg, n, c) {
+      if (tayState.fnKey === "cauchy") {
+        return `\\(P_{${n}}(x) = 0 + 0x + 0x^2 + \\cdots + 0x^{${n}} \\equiv 0\\) &nbsp;(every derivative \\(f^{(k)}(0) = 0\\)!)`;
+      }
+
+      const terms = [];
+      for (let k = 0; k <= n; k++) {
+        const fk = cfg.deriv(k, c);
+        const ak = fk / factorial(k);
+        if (Math.abs(ak) < 1e-11) continue;
+
+        const sign = ak >= 0 ? "+" : "-";
+        const absAk = Math.abs(ak);
+
+        let xPart = "";
+        if (k === 1) {
+          if (Math.abs(c) < 1e-9) xPart = "x";
+          else if (c > 0) xPart = `(x - ${Number(c.toFixed(2))})`;
+          else xPart = `(x + ${Number(Math.abs(c).toFixed(2))})`;
+        } else if (k > 1) {
+          if (Math.abs(c) < 1e-9) xPart = `x^{${k}}`;
+          else if (c > 0) xPart = `(x - ${Number(c.toFixed(2))})^{${k}}`;
+          else xPart = `(x + ${Number(Math.abs(c).toFixed(2))})^{${k}}`;
+        }
+
+        let coeffStr = "";
+        // Pretty symbolic coefficients for canonical textbook centers
+        if (Math.abs(c) < 1e-9 && (tayState.fnKey === "sin" || tayState.fnKey === "cos" || tayState.fnKey === "exp")) {
+          if (k === 0) coeffStr = "1";
+          else if (k === 1) coeffStr = "";
+          else coeffStr = `\\frac{1}{${k}!}`;
+        } else if (Math.abs(c) < 1e-9 && tayState.fnKey === "ln1px" && k >= 1) {
+          coeffStr = k === 1 ? "" : `\\frac{1}{${k}}`;
+        } else if (Math.abs(c - 2) < 1e-9 && tayState.fnKey === "one_over_x") {
+          const den = Math.pow(2, k + 1);
+          coeffStr = `\\frac{1}{${den}}`;
+        } else {
+          if (k > 0 && Math.abs(absAk - 1) < 1e-9) coeffStr = "";
+          else coeffStr = fmtNum(absAk, 4);
+        }
+
+        let combined = "";
+        if (coeffStr.startsWith("\\frac") && xPart) {
+          // Put xPart cleanly into numerator or beside fraction
+          combined = `${coeffStr}${xPart}`;
+        } else {
+          combined = `${coeffStr}${xPart}` || "1";
+        }
+
+        terms.push({ sign, combined });
+      }
+
+      if (terms.length === 0) {
+        return `\\(P_{${n}}(x) = 0\\)`;
+      }
+
+      const latexTerms = terms
+        .map((t, idx) => (idx === 0 ? (t.sign === "-" ? `-${t.combined}` : t.combined) : `${t.sign} ${t.combined}`))
+        .join(" ");
+
+      const seriesLabel = Math.abs(c) < 1e-9 ? "Maclaurin Polynomial" : `Taylor Polynomial at \\(c = ${c.toFixed(1)}\\)`;
+      return `<strong>${seriesLabel}:</strong> \\[ P_{${n}}(x) = ${latexTerms} \\]`;
+    }
+
+    function updateTaylorLab() {
+      const cfg = TAYLOR_PRESETS[tayState.fnKey];
+
+      // Enforce domain constraints on center c
+      if (cfg.lockC) {
+        tayState.c = 0.0;
+        elTayC.disabled = true;
+      } else {
+        elTayC.disabled = false;
+        if (tayState.fnKey === "one_over_x" && Math.abs(tayState.c) < 0.3) {
+          tayState.c = tayState.c >= 0 ? 0.5 : -0.5;
+        }
+        if (tayState.fnKey === "ln1px" && tayState.c <= -0.85) {
+          tayState.c = -0.8;
+        }
+      }
+
+      elTayN.value = String(tayState.n);
+      elTayC.value = String(tayState.c);
+      elTayX.value = String(tayState.x);
+
+      document.getElementById("tay-n-val").textContent = `n = ${tayState.n}`;
+      document.getElementById("tay-c-val").textContent = cfg.lockC
+        ? "c = 0.0 (Fixed)"
+        : `c = ${tayState.c.toFixed(1)}`;
+      document.getElementById("tay-x-val").textContent = `x = ${tayState.x.toFixed(2)}`;
+
+      const fxVal = cfg.fx(tayState.x);
+      const pnVal = evalTaylorPoly(cfg, tayState.n, tayState.c, tayState.x);
+      const errVal = Number.isFinite(fxVal) ? Math.abs(fxVal - pnVal) : NaN;
+      const boundVal = cfg.lagrangeBound(tayState.n, tayState.c, tayState.x);
+
+      document.getElementById("tay-m-fx").textContent = Number.isFinite(fxVal) ? fmtNum(fxVal, 6) : "Undefined";
+      document.getElementById("tay-m-pn").textContent = fmtNum(pnVal, 6);
+      document.getElementById("tay-m-err").textContent = Number.isFinite(errVal) ? fmtNum(errVal, 5) : "—";
+      document.getElementById("tay-m-bound").textContent = Number.isFinite(boundVal) ? fmtNum(boundVal, 5) : "N/A (Asymptote)";
+
+      // Populate derivative & coefficient table
+      const tbody = document.getElementById("tay-coeff-tbody");
+      let rowsHtml = "";
+      const dx = tayState.x - tayState.c;
+      for (let k = 0; k <= tayState.n; k++) {
+        const fk = cfg.deriv(k, tayState.c);
+        const ak = fk / factorial(k);
+        const termVal = ak * Math.pow(dx, k);
+        rowsHtml += `
+          <tr>
+            <td><strong>${k}</strong></td>
+            <td>${fmtNum(fk, 5)}</td>
+            <td>${fmtNum(ak, 6)}</td>
+            <td>${fmtNum(termVal, 6)}</td>
+          </tr>`;
+      }
+      tbody.innerHTML = rowsHtml;
+
+      // Render polynomial formula & worked derivation
+      const polyBox = document.getElementById("tay-poly-formula");
+      polyBox.innerHTML = buildPolynomialLatex(cfg, tayState.n, tayState.c);
+      renderMathIn(polyBox);
+
+      const derivBox = document.getElementById("tay-derivation");
+      derivBox.innerHTML = cfg.derivation(tayState.n, tayState.c, tayState.x, errVal, boundVal);
+      renderMathIn(derivBox);
+
+      // Toggle Remainder canvas visibility
+      const remWrap = document.getElementById("tay-rem-wrap");
+      remWrap.classList.toggle("hidden", !tayState.showRem);
+
+      drawTaylorMainCanvas();
+      if (tayState.showRem) drawTaylorRemainderCanvas();
+    }
+
+    function drawTaylorMainCanvas() {
+      const canvas = document.getElementById("canvas-taylor");
+      const info = setupHiDPICanvas(canvas);
+      if (!info) return;
+      const { ctx, w, h } = info;
+      const cfg = TAYLOR_PRESETS[tayState.fnKey];
+
+      const [xMin, xMax] = cfg.xWindow;
+      const [yMin, yMax] = cfg.yWindow;
+      const pad = { l: 50, r: 20, t: 22, b: 32 };
+      const { toX, toY, plotW, plotH } = drawCartesianAxes(ctx, pad, w, h, xMin, xMax, yMin, yMax, "x", "y", false);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(pad.l, pad.t, plotW, plotH);
+      ctx.clip();
+
+      // Shade finite Interval of Convergence if bounded
+      const [iocL, iocR] = cfg.iocFn(tayState.c);
+      if (Number.isFinite(iocL) || Number.isFinite(iocR)) {
+        const pxL = Number.isFinite(iocL) ? Math.max(pad.l, toX(iocL)) : pad.l;
+        const pxR = Number.isFinite(iocR) ? Math.min(pad.l + plotW, toX(iocR)) : pad.l + plotW;
+        if (pxR > pxL) {
+          ctx.fillStyle = "rgba(21, 128, 61, 0.08)";
+          ctx.fillRect(pxL, pad.t, pxR - pxL, plotH);
+        }
+        ctx.strokeStyle = "#15803D";
+        ctx.lineWidth = 1.3;
+        ctx.setLineDash([5, 4]);
+        if (Number.isFinite(iocL) && iocL >= xMin && iocL <= xMax) {
+          ctx.beginPath();
+          ctx.moveTo(toX(iocL), pad.t);
+          ctx.lineTo(toX(iocL), pad.t + plotH);
+          ctx.stroke();
+        }
+        if (Number.isFinite(iocR) && iocR >= xMin && iocR <= xMax) {
+          ctx.beginPath();
+          ctx.moveTo(toX(iocR), pad.t);
+          ctx.lineTo(toX(iocR), pad.t + plotH);
+          ctx.stroke();
+        }
+        ctx.setLineDash([]);
+      }
+
+      // Highlight ξ interval between c and x on horizontal axis
+      const y0Px = Math.min(pad.t + plotH - 4, Math.max(pad.t + 4, toY(0)));
+      const cxPx = toX(tayState.c);
+      const xxPx = toX(tayState.x);
+      ctx.strokeStyle = "rgba(217, 119, 6, 0.55)";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(cxPx, y0Px);
+      ctx.lineTo(xxPx, y0Px);
+      ctx.stroke();
+
+      // Exact curve f(x)
+      const samples = 340;
+      ctx.strokeStyle = "#1D4ED8";
+      ctx.lineWidth = 2.6;
+      ctx.beginPath();
+      let penDown = false;
+      let prevY = 0;
+      for (let i = 0; i <= samples; i++) {
+        const xv = xMin + ((xMax - xMin) * i) / samples;
+        const yv = cfg.fx(xv);
+        if (!Number.isFinite(yv) || Math.abs(yv) > (yMax - yMin) * 4 || (penDown && Math.abs(yv - prevY) > (yMax - yMin) * 1.5)) {
+          penDown = false;
+          continue;
+        }
+        const px = toX(xv);
+        const py = toY(yv);
+        if (!penDown) {
+          ctx.moveTo(px, py);
+          penDown = true;
+        } else {
+          ctx.lineTo(px, py);
+        }
+        prevY = yv;
+      }
+      ctx.stroke();
+
+      // Taylor polynomial curve P_n(x)
+      ctx.strokeStyle = "#DC2626";
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      penDown = false;
+      for (let i = 0; i <= samples; i++) {
+        const xv = xMin + ((xMax - xMin) * i) / samples;
+        const yv = evalTaylorPoly(cfg, tayState.n, tayState.c, xv);
+        if (!Number.isFinite(yv) || Math.abs(yv) > (yMax - yMin) * 5) {
+          penDown = false;
+          continue;
+        }
+        const px = toX(xv);
+        const py = toY(yv);
+        if (!penDown) {
+          ctx.moveTo(px, py);
+          penDown = true;
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+      ctx.stroke();
+
+      // Remainder segment R_n(x) between P_n(x) and f(x) at evaluation x
+      const fxAtX = cfg.fx(tayState.x);
+      const pnAtX = evalTaylorPoly(cfg, tayState.n, tayState.c, tayState.x);
+      if (Number.isFinite(fxAtX) && Number.isFinite(pnAtX)) {
+        ctx.strokeStyle = "#7C3AED";
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        ctx.moveTo(xxPx, toY(pnAtX));
+        ctx.lineTo(xxPx, toY(fxAtX));
+        ctx.stroke();
+
+        // Dots at (x, f(x)) and (x, P_n(x))
+        ctx.beginPath();
+        ctx.arc(xxPx, toY(fxAtX), 5, 0, Math.PI * 2);
+        ctx.fillStyle = "#1D4ED8";
+        ctx.fill();
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(xxPx, toY(pnAtX), 5, 0, Math.PI * 2);
+        ctx.fillStyle = "#DC2626";
+        ctx.fill();
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.stroke();
+      }
+
+      // Expansion center anchor (c, f(c))
+      const fc = cfg.fx(tayState.c);
+      if (Number.isFinite(fc)) {
+        ctx.beginPath();
+        ctx.arc(cxPx, toY(fc), 6.5, 0, Math.PI * 2);
+        ctx.fillStyle = "#15803D";
+        ctx.fill();
+        ctx.strokeStyle = "#FDE047";
+        ctx.lineWidth = 2.2;
+        ctx.stroke();
+      }
+
+      // Legend box
+      ctx.fillStyle = "rgba(255, 255, 255, 0.92)";
+      ctx.fillRect(pad.l + 8, pad.t + 8, 195, 56);
+      ctx.strokeStyle = "#CBD5E1";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(pad.l + 8, pad.t + 8, 195, 56);
+
+      ctx.font = "bold 11px -apple-system, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#1D4ED8";
+      ctx.fillText("━━ Exact Function f(x)", pad.l + 15, pad.t + 24);
+      ctx.fillStyle = "#DC2626";
+      ctx.fillText(`━━ Taylor Poly P_${tayState.n}(x)`, pad.l + 15, pad.t + 40);
+      ctx.fillStyle = "#15803D";
+      ctx.fillText(`● Center c = ${tayState.c.toFixed(1)}   ┃ R_${tayState.n}(x)`, pad.l + 15, pad.t + 56);
+
+      ctx.restore();
+    }
+
+    function drawTaylorRemainderCanvas() {
+      const canvas = document.getElementById("canvas-taylor-rem");
+      const info = setupHiDPICanvas(canvas);
+      if (!info) return;
+      const { ctx, w, h } = info;
+      const cfg = TAYLOR_PRESETS[tayState.fnKey];
+
+      const [xMin, xMax] = cfg.xWindow;
+      const samples = 240;
+      const errs = [];
+      let maxErr = 0.05;
+
+      for (let i = 0; i <= samples; i++) {
+        const xv = xMin + ((xMax - xMin) * i) / samples;
+        const fv = cfg.fx(xv);
+        const pv = evalTaylorPoly(cfg, tayState.n, tayState.c, xv);
+        const ev = Number.isFinite(fv) && Number.isFinite(pv) ? Math.abs(fv - pv) : NaN;
+        errs.push({ xv, ev });
+        if (Number.isFinite(ev) && ev < 5 && ev > maxErr) maxErr = ev;
+      }
+
+      const yMax = Math.min(4.0, maxErr * 1.15);
+      const pad = { l: 50, r: 20, t: 18, b: 26 };
+      const { toX, toY, plotW, plotH } = drawCartesianAxes(ctx, pad, w, h, xMin, xMax, 0, yMax, "x", "|Rₙ(x)|", false);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(pad.l, pad.t, plotW, plotH);
+      ctx.clip();
+
+      ctx.strokeStyle = "#7C3AED";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      let penDown = false;
+      for (let i = 0; i < errs.length; i++) {
+        const { xv, ev } = errs[i];
+        if (!Number.isFinite(ev) || ev > yMax * 3) {
+          penDown = false;
+          continue;
+        }
+        const px = toX(xv);
+        const py = toY(ev);
+        if (!penDown) {
+          ctx.moveTo(px, py);
+          penDown = true;
+        } else {
+          ctx.lineTo(px, py);
+        }
+      }
+      ctx.stroke();
+
+      // Current x marker on remainder curve
+      const curF = cfg.fx(tayState.x);
+      const curP = evalTaylorPoly(cfg, tayState.n, tayState.c, tayState.x);
+      if (Number.isFinite(curF) && Number.isFinite(curP)) {
+        const curE = Math.abs(curF - curP);
+        const px = toX(tayState.x);
+        const py = toY(Math.min(yMax, curE));
+        ctx.strokeStyle = "rgba(124, 58, 237, 0.45)";
+        ctx.setLineDash([4, 3]);
+        ctx.beginPath();
+        ctx.moveTo(px, toY(0));
+        ctx.lineTo(px, py);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.beginPath();
+        ctx.arc(px, py, 4.8, 0, Math.PI * 2);
+        ctx.fillStyle = "#7C3AED";
+        ctx.fill();
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = "#5B21B6";
+      ctx.font = "bold 11px -apple-system, sans-serif";
+      ctx.textAlign = "right";
+      ctx.fillText(`Absolute Remainder Curve |f(x) − P_${tayState.n}(x)|`, pad.l + plotW - 8, pad.t + 14);
+      ctx.restore();
+    }
+
+    document.querySelectorAll(".tay-preset").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tay-preset").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const key = btn.getAttribute("data-fn");
+        const cfg = TAYLOR_PRESETS[key];
+        tayState.fnKey = key;
+        tayState.c = cfg.defaultC;
+        tayState.x = cfg.defaultX;
+        tayState.n = cfg.defaultN;
+        updateTaylorLab();
+      });
+    });
+
+    elTayN.addEventListener("input", () => {
+      tayState.n = parseInt(elTayN.value, 10);
+      updateTaylorLab();
+    });
+    elTayC.addEventListener("input", () => {
+      tayState.c = parseFloat(elTayC.value);
+      updateTaylorLab();
+    });
+    elTayX.addEventListener("input", () => {
+      tayState.x = parseFloat(elTayX.value);
+      updateTaylorLab();
+    });
+    elTayShowRem.addEventListener("change", () => {
+      tayState.showRem = elTayShowRem.checked;
+      updateTaylorLab();
+    });
+
+    document.querySelectorAll(".tay-x-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        tayState.x = parseFloat(chip.getAttribute("data-x"));
+        updateTaylorLab();
+      });
+    });
+
+    activeRedrawers.push(() => {
+      drawTaylorMainCanvas();
+      if (tayState.showRem) drawTaylorRemainderCanvas();
+    });
+
+
+    /* -----------------------------------------------------------------------
+       3B. SCIENTIFIC CALCULATOR LAB: RANGE REDUCTION & CORDIC VS. MACLAURIN
+       ----------------------------------------------------------------------- */
+    const CORDIC_MAX = 14;
+    const CORDIC_ANGLES = Array.from({ length: CORDIC_MAX }, (_, i) => Math.atan(Math.pow(2, -i)));
+
+    function cordicScaleFactor(steps) {
+      let kProd = 1;
+      for (let i = 0; i < steps; i++) {
+        kProd *= 1 / Math.sqrt(1 + Math.pow(2, -2 * i));
+      }
+      return kProd;
+    }
+
+    function evalMaclaurinSin(rad, oddTermsCount) {
+      let sum = 0;
+      for (let j = 0; j < oddTermsCount; j++) {
+        const deg = 2 * j + 1;
+        const sign = j % 2 === 0 ? 1 : -1;
+        sum += (sign * Math.pow(rad, deg)) / factorial(deg);
+      }
+      return sum;
+    }
+
+    function reduceSineAngle(rad) {
+      const twoPi = 2 * Math.PI;
+      // Wrap into [-pi, pi)
+      const wrapped = (((rad + Math.PI) % twoPi) + twoPi) % twoPi - Math.PI;
+      if (wrapped > Math.PI / 2) return Math.PI - wrapped;
+      if (wrapped < -Math.PI / 2) return -Math.PI - wrapped;
+      return wrapped;
+    }
+
+    const cordicState = {
+      deg: 37,
+      steps: 6,
+      trace: [],
+      xRed: 0,
+      exactSin: 0
+    };
+
+    const elCordicDeg = document.getElementById("cordic-deg");
+    const elCordicSteps = document.getElementById("cordic-steps");
+
+    function updateCordicLab() {
+      elCordicDeg.value = String(cordicState.deg);
+      elCordicSteps.value = String(cordicState.steps);
+
+      document.getElementById("cordic-deg-val").textContent = `${cordicState.deg}°`;
+      document.getElementById("cordic-steps-val").textContent = `k = ${cordicState.steps}`;
+
+      const rad = (cordicState.deg * Math.PI) / 180;
+      const xRed = reduceSineAngle(rad);
+      const redDeg = (xRed * 180) / Math.PI;
+      const exactSin = Math.sin(rad);
+
+      cordicState.xRed = xRed;
+      cordicState.exactSin = exactSin;
+
+      // Run Volder's Hardware Circular Rotation CORDIC from pre-scaled (K_k, 0)
+      const kSteps = cordicState.steps;
+      const Kk = cordicScaleFactor(kSteps);
+      let cx = Kk;
+      let cy = 0;
+      let cz = xRed;
+      let accAngle = 0;
+
+      const trace = [{ step: -1, x: cx, y: cy, z: cz, accAngle: 0 }];
+      let rowsHtml = "";
+
+      for (let i = 0; i < kSteps; i++) {
+        const sigma = cz >= 0 ? 1 : -1;
+        const shift = Math.pow(2, -i);
+        const nx = cx - sigma * cy * shift;
+        const ny = cy + sigma * cx * shift;
+        const nz = cz - sigma * CORDIC_ANGLES[i];
+        accAngle += sigma * CORDIC_ANGLES[i];
+
+        cx = nx;
+        cy = ny;
+        cz = nz;
+
+        // Unit-projected sin at intermediate step i AND hardware y_i
+        const redMac = evalMaclaurinSin(xRed, i + 1);
+        const rawMac = evalMaclaurinSin(rad, i + 1);
+
+        trace.push({
+          step: i,
+          shift,
+          alphaDeg: (CORDIC_ANGLES[i] * 180) / Math.PI,
+          sigma,
+          x: cx,
+          y: cy,
+          z: nz,
+          accAngle,
+          redMac,
+          rawMac
+        });
+
+        const dirBadge =
+          sigma > 0
+            ? `<span class="status-badge status-ok">+1 (CCW)</span>`
+            : `<span class="status-badge status-bad">−1 (CW)</span>`;
+
+        rowsHtml += `
+          <tr>
+            <td><strong>${i}</strong></td>
+            <td><code>2⁻${i}</code> (${i === 0 ? "1" : `1/${Math.pow(2, i)}`})</td>
+            <td>${((CORDIC_ANGLES[i] * 180) / Math.PI).toFixed(3)}°</td>
+            <td>${dirBadge}</td>
+            <td>${cy.toFixed(7)}</td>
+            <td>${redMac.toFixed(7)}</td>
+          </tr>`;
+      }
+
+      cordicState.trace = trace;
+      document.getElementById("cordic-tbody").innerHTML = rowsHtml;
+
+      const rawMacFinal = evalMaclaurinSin(rad, kSteps);
+      const rawMacErr = Math.abs(rawMacFinal - exactSin);
+
+      document.getElementById("cordic-m-red").textContent = `${redDeg.toFixed(1)}° (${xRed.toFixed(4)} rad)`;
+      document.getElementById("cordic-m-exact").textContent = exactSin.toFixed(8);
+      document.getElementById("cordic-m-val").textContent = `${cy.toFixed(8)}`;
+
+      const rawMacEl = document.getElementById("cordic-m-mac");
+      if (rawMacErr > 0.05) {
+        rawMacEl.innerHTML = `${fmtNum(rawMacFinal, 4)} <span class="status-badge status-bad">Unstable!</span>`;
+      } else {
+        rawMacEl.textContent = rawMacFinal.toFixed(8);
+      }
+
+      drawCordicCanvas();
+    }
+
+    function drawCordicCanvas() {
+      const canvas = document.getElementById("canvas-cordic");
+      const info = setupHiDPICanvas(canvas);
+      if (!info) return;
+      const { ctx, w, h } = info;
+
+      const splitMode = w >= 520;
+      const leftW = splitMode ? Math.floor(w * 0.46) : w;
+
+      // ---------------- LEFT PANEL: UNIT CIRCLE & CORDIC ROTATIONS ----------------
+      const cx0 = leftW * 0.5;
+      const cy0 = h * 0.54;
+      const radius = Math.min(leftW * 0.37, h * 0.38);
+
+      ctx.save();
+      ctx.fillStyle = "#0F172A";
+      ctx.font = "bold 11.5px -apple-system, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("CORDIC Shift-and-Add Vector Trajectory", cx0, 18);
+
+      // Axes & Unit Circle
+      ctx.strokeStyle = "#CBD5E1";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(cx0 - radius * 1.2, cy0);
+      ctx.lineTo(cx0 + radius * 1.2, cy0);
+      ctx.moveTo(cx0, cy0 - radius * 1.15);
+      ctx.lineTo(cx0, cy0 + radius * 1.15);
+      ctx.stroke();
+
+      // Shaded right half-disk x >= 0 ([-pi/2, pi/2] reduced range)
+      ctx.fillStyle = "rgba(21, 128, 61, 0.06)";
+      ctx.beginPath();
+      ctx.arc(cx0, cy0, radius, -Math.PI / 2, Math.PI / 2);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = "#94A3B8";
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.arc(cx0, cy0, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Target reduced angle ray
+      const tx = cx0 + radius * Math.cos(cordicState.xRed);
+      const ty = cy0 - radius * Math.sin(cordicState.xRed);
+      ctx.strokeStyle = "#15803D";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(cx0, cy0);
+      ctx.lineTo(tx, ty);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Hardware CORDIC pseudo-rotation path from (K_k, 0) spiraling onto unit circle
+      const pts = cordicState.trace;
+      if (pts.length > 1) {
+        ctx.strokeStyle = "#D97706";
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        pts.forEach((p, idx) => {
+          const px = cx0 + p.x * radius;
+          const py = cy0 - p.y * radius;
+          if (idx === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        });
+        ctx.stroke();
+
+        pts.forEach((p, idx) => {
+          const px = cx0 + p.x * radius;
+          const py = cy0 - p.y * radius;
+          ctx.beginPath();
+          ctx.arc(px, py, idx === pts.length - 1 ? 5.2 : 3, 0, Math.PI * 2);
+          ctx.fillStyle = idx === 0 ? "#64748B" : idx === pts.length - 1 ? "#A6192E" : "#F59E0B";
+          ctx.fill();
+        });
+
+        // Final CORDIC vector & vertical sin projection
+        const last = pts[pts.length - 1];
+        const fx = cx0 + last.x * radius;
+        const fy = cy0 - last.y * radius;
+
+        ctx.strokeStyle = "#A6192E";
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        ctx.moveTo(cx0, cy0);
+        ctx.lineTo(fx, fy);
+        ctx.stroke();
+
+        // Vertical sin bar
+        ctx.strokeStyle = "#2563EB";
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(fx, cy0);
+        ctx.lineTo(fx, fy);
+        ctx.stroke();
+      }
+
+      ctx.font = "10.5px -apple-system, sans-serif";
+      ctx.fillStyle = "#475569";
+      ctx.fillText(`Start (K_${cordicState.steps}, 0) → Unit Circle (blue bar = sin θ)`, cx0, h - 8);
+      ctx.restore();
+
+      if (!splitMode) return;
+
+      // ---------------- RIGHT PANEL: LOG10 |ERROR| CONVERGENCE CHART ----------------
+      const rPad = { l: leftW + 44, r: 18, t: 28, b: 30 };
+      const plotW = w - rPad.l - rPad.r;
+      const plotH = h - rPad.t - rPad.b;
+      const kMax = cordicState.steps;
+
+      ctx.save();
+      ctx.fillStyle = "#0F172A";
+      ctx.font = "bold 11.5px -apple-system, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("log₁₀ |Error| vs. Iteration / Term Count", rPad.l + plotW / 2, 18);
+
+      const yMinLog = -12;
+      const yMaxLog = 4;
+      const mapStepX = (s) => rPad.l + ((s - 1) / Math.max(1, kMax - 1)) * plotW;
+      const mapLogY = (lg) => {
+        const clamped = Math.max(yMinLog, Math.min(yMaxLog, lg));
+        return rPad.t + plotH - ((clamped - yMinLog) / (yMaxLog - yMinLog)) * plotH;
+      };
+
+      // Grid & frame
+      ctx.strokeStyle = "#E2E8F0";
+      ctx.lineWidth = 1;
+      ctx.font = "10px -apple-system, sans-serif";
+      ctx.fillStyle = "#64748B";
+      for (let lg = -12; lg <= 4; lg += 4) {
+        const py = mapLogY(lg);
+        ctx.beginPath();
+        ctx.moveTo(rPad.l, py);
+        ctx.lineTo(rPad.l + plotW, py);
+        ctx.stroke();
+        ctx.textAlign = "right";
+        ctx.fillText(`10^${lg}`, rPad.l - 5, py + 3);
+      }
+
+      for (let s = 1; s <= kMax; s++) {
+        const px = mapStepX(s);
+        ctx.beginPath();
+        ctx.moveTo(px, rPad.t);
+        ctx.lineTo(px, rPad.t + plotH);
+        ctx.stroke();
+        ctx.textAlign = "center";
+        ctx.fillText(String(s), px, rPad.t + plotH + 14);
+      }
+      ctx.strokeStyle = "#CBD5E1";
+      ctx.strokeRect(rPad.l, rPad.t, plotW, plotH);
+
+      const safeLog10 = (err) => (err <= 1e-15 ? -12 : Math.log10(err));
+      const stepItems = cordicState.trace.slice(1);
+
+      // Series 1: Raw Unreduced Maclaurin Error (dashed purple)
+      ctx.strokeStyle = "#7C3AED";
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      stepItems.forEach((it, idx) => {
+        const px = mapStepX(idx + 1);
+        const py = mapLogY(safeLog10(Math.abs(it.rawMac - cordicState.exactSin)));
+        if (idx === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      });
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Series 2: Reduced Maclaurin Error (emerald)
+      ctx.strokeStyle = "#15803D";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      stepItems.forEach((it, idx) => {
+        const px = mapStepX(idx + 1);
+        const py = mapLogY(safeLog10(Math.abs(it.redMac - cordicState.exactSin)));
+        if (idx === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      });
+      ctx.stroke();
+
+      // Series 3: CORDIC Error (crimson)
+      ctx.strokeStyle = "#A6192E";
+      ctx.lineWidth = 2.2;
+      ctx.beginPath();
+      stepItems.forEach((it, idx) => {
+        const px = mapStepX(idx + 1);
+        const py = mapLogY(safeLog10(Math.abs(it.y - cordicState.exactSin)));
+        if (idx === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      });
+      ctx.stroke();
+
+      stepItems.forEach((it, idx) => {
+        const px = mapStepX(idx + 1);
+        const py = mapLogY(safeLog10(Math.abs(it.y - cordicState.exactSin)));
+        ctx.beginPath();
+        ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = "#A6192E";
+        ctx.fill();
+      });
+
+      // Mini Legend
+      ctx.font = "bold 10px -apple-system, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#A6192E";
+      ctx.fillText("● CORDIC", rPad.l + 6, rPad.t + 13);
+      ctx.fillStyle = "#15803D";
+      ctx.fillText("━━ Reduced Maclaurin", rPad.l + 68, rPad.t + 13);
+      ctx.fillStyle = "#7C3AED";
+      ctx.fillText("┅ Raw Maclaurin", rPad.l + 190, rPad.t + 13);
+      ctx.restore();
+    }
+
+    elCordicDeg.addEventListener("input", () => {
+      document.querySelectorAll(".cordic-angle-chip").forEach((c) => c.classList.remove("active"));
+      cordicState.deg = parseInt(elCordicDeg.value, 10);
+      updateCordicLab();
+    });
+
+    elCordicSteps.addEventListener("input", () => {
+      cordicState.steps = parseInt(elCordicSteps.value, 10);
+      updateCordicLab();
+    });
+
+    document.querySelectorAll(".cordic-angle-chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".cordic-angle-chip").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        cordicState.deg = parseInt(chip.getAttribute("data-deg"), 10);
+        updateCordicLab();
+      });
+    });
+
+    activeRedrawers.push(drawCordicCanvas);
+
+
+    /* -----------------------------------------------------------------------
+       4. SELF-GRADING 8-QUESTION DIAGNOSTIC CONCEPT QUIZ ENGINE
+       ----------------------------------------------------------------------- */
+    const QUIZ_QUESTIONS = [
+      {
+        topic: "Slides 3–4 & 17–21 • Zeno’s Dichotomy",
+        prompt:
+          "How does the <strong>Reverse Zeno’s Dichotomy</strong> (Figure 2) differ structurally from the <strong>Original Zeno’s Dichotomy</strong> (Figure 1) on the journey from \\(0\\) to \\(1\\)?",
+        options: [
+          "Both versions place the infinite subdivision at \\(x = 0\\), proving motion is physically impossible.",
+          "Original Dichotomy places the infinite tail end at the start \\([0, 1/2^n]\\) (no <em>first</em> step), whereas Reverse Dichotomy places the infinite tail end at the finish \\([1 - 1/2^n, 1]\\) (no <em>last</em> step).",
+          "Reverse Dichotomy diverges to \\(\\infty\\), whereas Original Dichotomy converges to \\(1/2\\).",
+          "Original Dichotomy uses step sizes \\(1/n\\), whereas Reverse Dichotomy uses step sizes \\(1/3^n\\)."
+        ],
+        correct: 1,
+        explanation:
+          "In <strong>Original Dichotomy</strong> (Figure 1), before reaching \\(1/2\\) you must reach \\(1/4\\), before \\(1/4\\) you must reach \\(1/8\\), trapping the infinite tail end at \\(x = 0\\) (so there is <em>no first step</em>). In <strong>Reverse Dichotomy</strong> (Figure 2), you step \\(1/2 + 1/4 + 1/8 + \\cdots\\), placing the infinite tail end at \\(x = 1\\) (<em>no last step</em>), whose partial sums \\(s_n = 1 - 1/2^n\\) converge to \\(1\\)."
+      },
+      {
+        topic: "Slides 5–7 • Definition 1.1 & Exercise 1.2",
+        prompt:
+          "Consider the sequence \\(a_n = \\dfrac{2n + 1}{3n + 2}\\) (\\(n \\ge 0\\)), which converges to \\(L = \\dfrac{2}{3}\\). For \\(\\varepsilon = \\dfrac{1}{60}\\), what is the smallest non-negative integer \\(N\\) such that \\(\\left|a_n - \\frac{2}{3}\\right| < \\varepsilon\\) holds for <strong>all</strong> integers \\(n > N\\)?",
+        options: [
+          "\\(N = 4\\)",
+          "\\(N = 5\\)",
+          "\\(N = 6\\)",
+          "\\(N = 9\\)"
+        ],
+        correct: 2,
+        explanation:
+          "Compute the exact distance: \\(\\left|\\dfrac{2n+1}{3n+2} - \\dfrac{2}{3}\\right| = \\left|\\dfrac{6n+3 - (6n+4)}{3(3n+2)}\\right| = \\dfrac{1}{9n + 6}\\). Setting \\(\\dfrac{1}{9n + 6} < \\dfrac{1}{60}\\) gives \\(9n + 6 > 60 \\iff 9n > 54 \\iff n > 6\\). Thus \\(N = 6\\) is the minimal integer threshold (at \\(n = 6\\), the error equals \\(\\frac{1}{60}\\), and for every \\(n > 6\\) it is strictly less than \\(\\frac{1}{60}\\))."
+      },
+      {
+        topic: "Slides 8–11 • Exercises 1.3 & 1.4",
+        prompt:
+          "Which statement accurately describes the sequence \\(a_n = \\dfrac{e^n}{3n + 2}\\) and the Fibonacci consecutive-term ratio \\(b_n = \\dfrac{F_n}{F_{n-1}}\\) (\\(n \\ge 2\\))?",
+        options: [
+          "Both \\(\\{a_n\\}\\) and \\(\\{b_n\\}\\) converge to \\(\\frac{1 + \\sqrt{5}}{2}\\).",
+          "\\(\\{a_n\\}\\) converges to \\(\\frac{1}{3}\\) by L’Hôpital’s Rule, while \\(\\{b_n\\}\\) diverges.",
+          "\\(\\{a_n\\}\\) diverges to \\(+\\infty\\) (since \\(\\lim_{x\\to\\infty}\\frac{e^x}{3x+2} = \\lim_{x\\to\\infty}\\frac{e^x}{3} = \\infty\\)), while \\(\\{b_n\\}\\) converges to the Golden Ratio \\(\\varphi = \\frac{1 + \\sqrt{5}}{2}\\).",
+          "\\(\\{a_n\\}\\) oscillates between \\(-1\\) and \\(1\\), while \\(\\{b_n\\}\\) converges to \\(\\frac{1 - \\sqrt{5}}{2}\\)."
+        ],
+        correct: 2,
+        explanation:
+          "In <strong>Exercise 1.3</strong>, applying L’Hôpital’s Rule to \\(f(x) = \\frac{e^x}{3x+2}\\) yields \\(\\lim_{x\\to\\infty} \\frac{e^x}{3} = \\infty\\), so \\(\\{a_n\\}\\) diverges. In <strong>Exercise 1.4</strong>, \\(b_n = 1 + \\frac{1}{b_{n-1}}\\) with \\(b_n > 0\\); passing to the limit \\(L = 1 + \\frac{1}{L}\\) gives \\(L^2 - L - 1 = 0\\) and rejecting the negative root yields \\(L = \\frac{1 + \\sqrt{5}}{2}\\)."
+      },
+      {
+        topic: "Slides 14–16 • Geometric Series & Exercise 1.6",
+        prompt:
+          "Using Theorem 1.1 (infinite geometric progression), express the repeating decimal \\(0.\\overline{27} = 0.272727\\dots\\) as a simplified rational fraction.",
+        options: [
+          "\\(\\dfrac{27}{100}\\)",
+          "\\(\\dfrac{3}{11}\\)",
+          "\\(\\dfrac{9}{37}\\)",
+          "\\(\\dfrac{27}{101}\\)"
+        ],
+        correct: 1,
+        explanation:
+          "Following <strong>Exercise 1.6</strong>, write \\(0.\\overline{27} = \\frac{27}{10^2} + \\frac{27}{10^4} + \\frac{27}{10^6} + \\cdots\\), which is a geometric series with first term \\(a = \\frac{27}{100}\\) and common ratio \\(r = \\frac{1}{100}\\) (\\(|r| < 1\\)). By Theorem 1.1, its sum is \\(\\dfrac{27/100}{1 - 1/100} = \\dfrac{27}{99} = \\dfrac{3}{11}\\)."
+      },
+      {
+        topic: "Slides 24–25 • Theorem 2.1 & Exercise 2.1",
+        prompt:
+          "Evaluate the exact sum of the infinite series \\(\\displaystyle \\sum_{n=1}^{\\infty} \\frac{n}{3^{n-1}} = 1 + \\frac{2}{3} + \\frac{3}{9} + \\frac{4}{27} + \\cdots\\).",
+        options: [
+          "\\(\\dfrac{3}{2}\\)",
+          "\\(2\\)",
+          "\\(\\dfrac{9}{4}\\)",
+          "\\(3\\)"
+        ],
+        correct: 2,
+        explanation:
+          "From <strong>Exercise 2.1</strong>, differentiating \\(\\frac{1}{1 - x} = \\sum_{n=0}^{\\infty} x^n\\) term-by-term on \\((-1, 1)\\) gives \\(\\sum_{n=1}^{\\infty} n x^{n-1} = \\dfrac{1}{(1 - x)^2}\\). Substituting \\(x = \\dfrac{1}{3} \\in (-1, 1)\\) yields \\(\\dfrac{1}{(1 - 1/3)^2} = \\dfrac{1}{(2/3)^2} = \\dfrac{9}{4} = 2.25\\)."
+      },
+      {
+        topic: "Slide 24 • Theorem 2.1 Endpoint Behavior",
+        prompt:
+          "Suppose \\(f(x) = \\sum_{n=0}^{\\infty} a_n (x - c)^n\\) converges on \\((c - R, c + R)\\) with radius \\(R > 0\\). According to Theorem 2.1, what happens when we differentiate or integrate \\(f(x)\\) term-by-term?",
+        options: [
+          "Differentiation halves the radius to \\(R/2\\), whereas integration doubles it to \\(2R\\).",
+          "Both the differentiated and integrated series automatically converge on the closed interval \\([c - R, c + R]\\).",
+          "Both retain the exact same open interval \\((c - R, c + R)\\) and radius \\(R\\), but convergence at the two endpoints \\(x = c \\pm R\\) may change and must be tested individually.",
+          "Term-by-term integration is only valid when \\(c = 0\\)."
+        ],
+        correct: 2,
+        explanation:
+          "<strong>Theorem 2.1</strong> guarantees term-by-term differentiability and integrability inside the open interval \\(|x - c| < R\\) (preserving radius \\(R\\)). However, endpoint convergence can change: for example, \\(\\sum_{n=0}^{\\infty} x^n\\) diverges at \\(x = -1\\), whereas its term-by-term integral \\(\\sum_{n=1}^{\\infty} \\frac{x^n}{n}\\) <em>converges</em> at \\(x = -1\\)!"
+      },
+      {
+        topic: "Slides 27–28 • Definition 3.1 & Smoothness Trap",
+        prompt:
+          "Let \\(f(x) = e^{-1/x^2}\\) for \\(x \\neq 0\\) and \\(f(0) = 0\\) (Slide 28). Every derivative at the origin satisfies \\(f^{(n)}(0) = 0\\) for all \\(n \\ge 0\\). What happens to its Maclaurin series at \\(x = 1\\)?",
+        options: [
+          "The Maclaurin series diverges at \\(x = 1\\).",
+          "The Maclaurin series converges to \\(0\\), which does <strong>not</strong> equal \\(f(1) = e^{-1}\\) because \\(\\lim_{n\\to\\infty} R_n(1) = e^{-1} \\neq 0\\).",
+          "The Maclaurin series converges to \\(e^{-1}\\).",
+          "Maclaurin’s series cannot be written down because \\(f\\) is not differentiable at \\(0\\)."
+        ],
+        correct: 1,
+        explanation:
+          "Since \\(f^{(n)}(0) = 0\\) for every \\(n \\ge 0\\), all Maclaurin coefficients vanish and the series is \\(0 + 0x + 0x^2 + \\cdots = 0\\). It converges everywhere to \\(0\\), <strong>not</strong> to \\(f(1) = e^{-1} \\approx 0.3679\\)! Having derivatives of all orders lets us write Taylor’s series, but it converges to \\(f(x)\\) if and only if \\(\\lim_{n\\to\\infty} R_n(x) = 0\\)."
+      },
+      {
+        topic: "Slides 31–35 • Theorem 3.1 Lagrange Remainder",
+        prompt:
+          "Using Theorem 3.1 for \\(f(x) = \\sin x\\) centered at \\(c = 0\\) with order \\(n = 3\\), we have \\(R_3(x) = \\dfrac{f^{(4)}(\\xi)}{4!} x^4 = \\dfrac{\\sin\\xi}{4!} x^4\\) for some \\(\\xi\\) between \\(0\\) and \\(x\\). Using \\(|\\sin\\xi| \\le 1\\), what upper bound does this formula directly give at \\(x = 0.5\\)?",
+        options: [
+          "\\(\\dfrac{(0.5)^3}{3!} = \\dfrac{1}{48}\\)",
+          "\\(\\dfrac{(0.5)^4}{4!} = \\dfrac{1}{384}\\)",
+          "\\(\\dfrac{(0.5)^4}{3!} = \\dfrac{1}{96}\\)",
+          "\\(\\dfrac{(0.5)^2}{2!} = \\dfrac{1}{8}\\)"
+        ],
+        correct: 1,
+        explanation:
+          "Directly substituting \\(n = 3\\), \\(c = 0\\), \\(x = 0.5\\), and \\(|f^{(4)}(\\xi)| = |\\sin\\xi| \\le 1\\) into Eq. (15) gives \\(|R_3(0.5)| \\le \\dfrac{(0.5)^4}{4!} = \\dfrac{1/16}{24} = \\dfrac{1}{384} \\approx 2.60 \\times 10^{-3}\\). <em>Bonus insight:</em> Because \\(f^{(4)}(0) = \\sin 0 = 0\\), \\(P_3(x) = P_4(x) = x - \\frac{x^3}{6}\\), so applying Theorem 3.1 with \\(n = 4\\) sharpens the bound to \\(\\frac{(0.5)^5}{5!} = \\frac{1}{3840} \\approx 2.60 \\times 10^{-4}\\)!"
+      }
+    ];
+
+    const quizState = {
+      answers: new Array(QUIZ_QUESTIONS.length).fill(null),
+      revealAll: false
+    };
+
+    function updateQuizScorePill() {
+      let answered = 0;
+      let correct = 0;
+      quizState.answers.forEach((ans, idx) => {
+        if (ans !== null) {
+          answered += 1;
+          if (ans === QUIZ_QUESTIONS[idx].correct) correct += 1;
+        }
+      });
+      const pill = document.getElementById("quiz-score-pill");
+      pill.textContent = `Score: ${correct} / ${QUIZ_QUESTIONS.length} Correct (${answered} Answered)`;
+    }
+
+    function renderQuiz() {
+      const listEl = document.getElementById("quiz-list");
+      const letters = ["A", "B", "C", "D"];
+
+      listEl.innerHTML = QUIZ_QUESTIONS.map((q, qIdx) => {
+        const userAns = quizState.answers[qIdx];
+        const isLocked = userAns !== null || quizState.revealAll;
+
+        const optsHtml = q.options
+          .map((optText, oIdx) => {
+            let stateClass = "";
+            if (isLocked) {
+              if (oIdx === q.correct) stateClass = "is-correct";
+              else if (userAns === oIdx) stateClass = "is-wrong";
+            }
+            return `
+              <button
+                type="button"
+                class="quiz-opt-btn ${stateClass}"
+                data-q="${qIdx}"
+                data-o="${oIdx}"
+                ${isLocked ? "disabled" : ""}
+              >
+                <span class="quiz-opt-letter">${letters[oIdx]}</span>
+                <span>${optText}</span>
+              </button>`;
+          })
+          .join("");
+
+        let statusHtml = "";
+        if (userAns !== null) {
+          statusHtml =
+            userAns === q.correct
+              ? `<span class="status-badge status-ok">✓ Correct</span>`
+              : `<span class="status-badge status-bad">✗ Incorrect (Ans: ${letters[q.correct]})</span>`;
+        } else if (quizState.revealAll) {
+          statusHtml = `<span class="status-badge status-warn">Solution Revealed (${letters[q.correct]})</span>`;
+        }
+
+        const expHtml = isLocked
+          ? `<div class="quiz-exp-box"><strong>Worked Explanation:</strong> ${q.explanation}</div>`
+          : "";
+
+        return `
+          <article class="quiz-card-box">
+            <div class="quiz-card-meta">
+              <span class="quiz-q-badge">Question ${qIdx + 1} of ${QUIZ_QUESTIONS.length}</span>
+              <span class="quiz-topic-tag">${q.topic}</span>
+              ${statusHtml}
+            </div>
+            <div class="quiz-prompt-text">${q.prompt}</div>
+            <div class="quiz-opts-list">${optsHtml}</div>
+            ${expHtml}
+          </article>`;
+      }).join("");
+
+      listEl.querySelectorAll(".quiz-opt-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const qIdx = parseInt(btn.getAttribute("data-q"), 10);
+          const oIdx = parseInt(btn.getAttribute("data-o"), 10);
+          if (quizState.answers[qIdx] !== null) return;
+          quizState.answers[qIdx] = oIdx;
+          renderQuiz();
+        });
+      });
+
+      updateQuizScorePill();
+      renderMathIn(listEl);
+    }
+
+    document.getElementById("quiz-reveal-btn").addEventListener("click", (e) => {
+      quizState.revealAll = !quizState.revealAll;
+      e.currentTarget.textContent = quizState.revealAll
+        ? "🙈 Hide Unanswered Explanations"
+        : "👁 Show All Worked Explanations";
+      renderQuiz();
+    });
+
+    document.getElementById("quiz-reset-btn").addEventListener("click", () => {
+      quizState.answers.fill(null);
+      quizState.revealAll = false;
+      document.getElementById("quiz-reveal-btn").textContent = "👁 Show All Worked Explanations";
+      renderQuiz();
+    });
+
+
+    /* -----------------------------------------------------------------------
+       5. APPLICATION BOOTSTRAP & KATEX INITIALIZATION
+       ----------------------------------------------------------------------- */
+    function bootInteractiveCompanion() {
+      // Render static LaTeX across all panels first
+      renderMathIn(document.body);
+
+      // Initialize all interactive modules
+      updateZenoUI();
+      updateSequenceLab();
+      updateGeometricLab();
+      updateRepeatingDecimal();
+      updatePowerSeriesLab();
+      updateTaylorLab();
+      updateCordicLab();
+      renderQuiz();
+
+      // Ensure canvases draw crisply after layout settles
+      requestAnimationFrame(redrawAllVisible);
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", bootInteractiveCompanion);
+    } else {
+      bootInteractiveCompanion();
+    }
+
+    // Backup pass once deferred KaTeX CDN scripts & web fonts finish loading
+    window.addEventListener("load", () => {
+      renderMathIn(document.body);
+      redrawAllVisible();
+    });
+  </script>
+</body>
+</html>
