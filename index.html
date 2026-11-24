@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMA1702 Calculus — Lecture Notes 11 Interactive Companion | PolyU</title>
+
+  <!-- KaTeX Math Typesetting (CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      /* PolyU & Beamer Lecture Slide Palette */
+      --polyu-red: #A6192E;
+      --polyu-red-dark: #7A1020;
+      --polyu-red-soft: #FDF2F4;
+      --beamer-gold: #F2B728;
+      --beamer-gold-light: #F7CE65;
+      --beamer-gold-soft: #FFFBEB;
+
+      /* Slide Box Accents (Definitions, Theorems, Exercises, Solutions) */
+      --def-bg: #FFF5F7;
+      --def-border: #F4A6B8;
+      --def-header: #F4B4C2;
+      --thm-bg: #F8FAFC;
+      --thm-border: #64748B;
+      --thm-header: #6B7280;
+      --ex-border: #1D4ED8;
+      --ex-header: #0026D6;
+      --sol-bg: #F0F9FF;
+      --sol-border: #0EA5E9;
+      --sol-header: #0284C7;
+
+      /* Semantic Status Colors */
+      --emerald: #15803D;
+      --emerald-soft: #DCFCE7;
+      --amber: #B45309;
+      --amber-soft: #FEF3C7;
+      --crimson: #DC2626;
+      --crimson-soft: #FEE2E2;
+      --royal: #1D4ED8;
+      --royal-soft: #DBEAFE;
+      --purple: #7C3AED;
+
+      /* Neutral Surfaces */
+      --bg-page: #F3F5F9;
+      --bg-card: #FFFFFF;
+      --bg-subtle: #F8FAFC;
+      --text-main: #0F172A;
+      --text-secondary: #334155;
+      --text-muted: #64748B;
+      --border-light: #E2E8F0;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.07);
+      --shadow-md: 0 6px 18px rgba(15, 23, 42, 0.08);
+      --radius-md: 12px;
+      --radius-lg: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.62;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top Beamer-Inspired Dual Gold Bar */
+    .beamer-topbar {
+      display: flex;
+      height: 8px;
+      width: 100%;
+    }
+    .beamer-topbar .half-left {
+      flex: 1;
+      background: var(--beamer-gold);
+    }
+    .beamer-topbar .half-right {
+      flex: 1;
+      background: var(--beamer-gold-light);
+    }
+
+    /* Hero Header */
+    .site-header {
+      background: linear-gradient(135deg, var(--polyu-red-dark) 0%, var(--polyu-red) 65%, #BE233B 100%);
+      color: #FFFFFF;
+      padding: 2rem 1.5rem 1.75rem;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .site-header::after {
+      content: "∑";
+      position: absolute;
+      right: 3%;
+      bottom: -35px;
+      font-size: 11rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.06);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .header-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1.25rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .course-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(242, 183, 40, 0.22);
+      border: 1px solid rgba(242, 183, 40, 0.55);
+      color: #FFE59E;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      margin-bottom: 0.65rem;
+    }
+
+    .site-header h1 {
+      font-size: clamp(1.55rem, 2.8vw, 2.25rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 0.45rem;
+    }
+
+    .header-subtitle {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.98rem;
+      max-width: 680px;
+    }
+
+    .instructor-card {
+      background: rgba(15, 23, 42, 0.28);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-md);
+      padding: 0.95rem 1.2rem;
+      min-width: 280px;
+      font-size: 0.88rem;
+    }
+
+    .instructor-card .inst-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #FFE59E;
+      margin-bottom: 0.15rem;
+    }
+
+    .instructor-card .inst-role {
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 0.82rem;
+      margin-bottom: 0.55rem;
+    }
+
+    .consult-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255, 255, 255, 0.14);
+      padding: 0.32rem 0.68rem;
+      border-radius: 8px;
+      font-weight: 600;
+      color: #FFFFFF;
+      font-size: 0.82rem;
+    }
+
+    /* Sticky Navigation Bar */
+    .sticky-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-light);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+
+    .nav-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 0.55rem 1.2rem;
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-inner::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-tab {
+      appearance: none;
+      border: 1px solid transparent;
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.58rem 1.05rem;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.48rem;
+      transition: all 0.18s ease;
+    }
+
+    .nav-tab:hover {
+      background: var(--polyu-red-soft);
+      color: var(--polyu-red);
+      border-color: rgba(166, 25, 46, 0.25);
+    }
+
+    .nav-tab.active {
+      background: var(--polyu-red);
+      color: #FFFFFF;
+      box-shadow: 0 3px 10px rgba(166, 25, 46, 0.28);
+    }
+
+    .nav-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 0.76rem;
+      font-weight: 700;
+      background: rgba(15, 23, 42, 0.1);
+      color: inherit;
+    }
+
+    .nav-tab.active .nav-badge {
+      background: var(--beamer-gold);
+      color: #1E293B;
+    }
+
+    /* Main Container & Panels */
+    .container {
+      max-width: 1260px;
+      margin: 1.6rem auto 3.5rem;
+      padding: 0 1.2rem;
+    }
+
+    .module-panel {
+      display: none;
+      animation: fadeSlide 0.24s ease-out;
+    }
+
+    .module-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Section Title Banner */
+    .module-banner {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 1.35rem 1.6rem;
+      margin-bottom: 1.5rem;
+      border-left: 6px solid var(--polyu-red);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .module-banner h2 {
+      font-size: 1.45rem;
+      color: var(--polyu-red);
+      margin-bottom: 0.25rem;
+    }
+
+    .module-banner p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      max-width: 820px;
+    }
+
+    .slide-ref-pill {
+      background: var(--beamer-gold-soft);
+      border: 1px solid var(--beamer-gold);
+      color: #854D0E;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    /* Beamer-Faithful Pedagogical Boxes */
+    .ped-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.15rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .beamer-box {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      border: 1.5px solid var(--border-light);
+      margin-bottom: 1.25rem;
+    }
+
+    .ped-grid .beamer-box {
+      margin-bottom: 0;
+    }
+
+    .beamer-box-title {
+      display: inline-block;
+      padding: 0.32rem 0.95rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #FFFFFF;
+      border-bottom-right-radius: 8px;
+    }
+
+    .beamer-box.def-box {
+      background: var(--def-bg);
+      border-color: var(--def-border);
+    }
+    .beamer-box.def-box .beamer-box-title {
+      background: #E0899D;
+    }
+
+    .beamer-box.thm-box {
+      background: var(--thm-bg);
+      border-color: var(--thm-border);
+    }
+    .beamer-box.thm-box .beamer-box-title {
+      background: var(--thm-header);
+    }
+
+    .beamer-box.ex-box {
+      background: #FFFFFF;
+      border-color: var(--ex-border);
+    }
+    .beamer-box.ex-box .beamer-box-title {
+      background: var(--ex-header);
+    }
+
+    .beamer-box.sol-box {
+      background: var(--sol-bg);
+      border-color: var(--sol-border);
+    }
+    .beamer-box.sol-box .beamer-box-title {
+      background: var(--sol-header);
+    }
+
+    .beamer-box-body {
+      padding: 0.95rem 1.2rem 1.1rem;
+      font-size: 0.94rem;
+      color: var(--text-main);
+    }
+
+    .beamer-box-body p + p {
+      margin-top: 0.6rem;
+    }
+
+    .eq-tag {
+      float: right;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    /* Interactive Lab Card */
+    .lab-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-light);
+      box-shadow: var(--shadow-md);
+      margin-bottom: 1.85rem;
+      overflow: hidden;
+    }
+
+    .lab-header {
+      background: linear-gradient(90deg, #F8FAFC 0%, #F1F5F9 100%);
+      border-bottom: 1px solid var(--border-light);
+      padding: 1.05rem 1.4rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .lab-header h3 {
+      font-size: 1.16rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .lab-tag {
+      background: var(--polyu-red);
+      color: #FFFFFF;
+      font-size: 0.73rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.22rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    .lab-grid {
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 1.4rem;
+      padding: 1.35rem 1.4rem;
+      align-items: start;
+    }
+
+    @media (max-width: 980px) {
+      .lab-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Controls Panel */
+    .controls-pane {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.95rem;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.38rem;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.87rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .control-val {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      background: #FFFFFF;
+      border: 1px solid var(--border-light);
+      color: var(--polyu-red);
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 0.1rem 0.5rem;
+      border-radius: 6px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--polyu-red);
+      cursor: pointer;
+      height: 6px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--polyu-red);
+      box-shadow: 0 0 0 3px rgba(166, 25, 46, 0.14);
+    }
+
+    /* Preset & Action Buttons */
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.42rem;
+    }
+
+    .pill-btn {
+      appearance: none;
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      color: var(--text-secondary);
+      font-size: 0.81rem;
+      font-weight: 600;
+      padding: 0.38rem 0.72rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .pill-btn:hover {
+      border-color: var(--polyu-red);
+      color: var(--polyu-red);
+      background: var(--polyu-red-soft);
+    }
+
+    .pill-btn.active {
+      background: var(--polyu-red);
+      border-color: var(--polyu-red);
+      color: #FFFFFF;
+    }
+
+    .action-btn {
+      appearance: none;
+      background: var(--royal);
+      color: #FFFFFF;
+      border: none;
+      font-size: 0.83rem;
+      font-weight: 600;
+      padding: 0.46rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .action-btn:hover {
+      background: #1E40AF;
+    }
+    .action-btn.secondary {
+      background: #E2E8F0;
+      color: var(--text-main);
+    }
+    .action-btn.secondary:hover {
+      background: #CBD5E1;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .checkbox-row input {
+      accent-color: var(--polyu-red);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    /* Canvas & Live Readout Area */
+    .visual-pane {
+      display: flex;
+      flex-direction: column;
+      gap: 0.95rem;
+      min-width: 0;
+    }
+
+    .canvas-wrap {
+      background: #FFFFFF;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 0.5rem;
+      position: relative;
+      box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
+    }
+
+    canvas.plot-canvas {
+      display: block;
+      width: 100%;
+      height: 330px;
+      border-radius: 8px;
+    }
+
+    canvas.plot-canvas.short-canvas {
+      height: 215px;
+    }
+
+    canvas.plot-canvas.mini-canvas {
+      height: 165px;
+    }
+
+    /* Metrics Strip */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 0.65rem;
+    }
+
+    .metric-tile {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 0.65rem 0.8rem;
+    }
+
+    .metric-tile .m-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .metric-tile .m-val {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      word-break: break-word;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.16rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .status-ok {
+      background: var(--emerald-soft);
+      color: var(--emerald);
+    }
+    .status-warn {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+    .status-bad {
+      background: var(--crimson-soft);
+      color: var(--crimson);
+    }
+
+    /* Dynamic Derivation & Footnote Callouts */
+    .derivation-card {
+      background: var(--sol-bg);
+      border: 1px solid #BAE6FD;
+      border-left: 4px solid var(--sol-header);
+      border-radius: 10px;
+      padding: 0.95rem 1.15rem;
+      font-size: 0.91rem;
+      color: var(--text-main);
+      overflow-x: auto;
+    }
+
+    .derivation-card h4 {
+      color: #0369A1;
+      font-size: 0.92rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .insight-callout {
+      background: #FFFBEB;
+      border: 1px solid #FDE68A;
+      border-left: 4px solid var(--beamer-gold);
+      border-radius: 10px;
+      padding: 0.95rem 1.15rem;
+      font-size: 0.9rem;
+      color: #451A03;
+    }
+
+    .insight-callout strong {
+      color: #92400E;
+    }
+
+    details.deep-dive {
+      background: #F8FAFC;
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      margin-top: 0.5rem;
+    }
+
+    details.deep-dive summary {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--polyu-red);
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    details.deep-dive summary::after {
+      content: "▾";
+      font-size: 1rem;
+      transition: transform 0.2s ease;
+    }
+    details.deep-dive[open] summary::after {
+      transform: rotate(180deg);
+    }
+
+    details.deep-dive .dive-content {
+      margin-top: 0.7rem;
+      padding-top: 0.7rem;
+      border-top: 1px solid var(--border-light);
+      font-size: 0.89rem;
+      color: var(--text-secondary);
+    }
+
+    /* Tables (Taylor Coefficients & CORDIC Comparison) */
+    .data-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      background: #FFFFFF;
+    }
+
+    table.math-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+
+    table.math-table th,
+    table.math-table td {
+      padding: 0.52rem 0.75rem;
+      border-bottom: 1px solid var(--border-light);
+      text-align: left;
+    }
+
+    table.math-table th {
+      background: #F1F5F9;
+      color: var(--text-secondary);
+      font-weight: 700;
+      font-size: 0.79rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    table.math-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Module 4 Quiz Styling */
+    .quiz-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.3rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .score-pill {
+      background: var(--polyu-red-soft);
+      border: 1px solid rgba(166, 25, 46, 0.3);
+      color: var(--polyu-red);
+      font-weight: 800;
+      font-size: 0.98rem;
+      padding: 0.4rem 0.95rem;
+      border-radius: 999px;
+    }
+
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.15rem;
+    }
+
+    .quiz-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 1.2rem 1.35rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .quiz-q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .quiz-q-num {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--polyu-red);
+      background: var(--polyu-red-soft);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    .quiz-topic-tag {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .quiz-prompt {
+      font-size: 0.98rem;
+      font-weight: 600;
+      margin-bottom: 0.85rem;
+      color: var(--text-main);
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 0.55rem;
+    }
+
+    .quiz-opt-btn {
+      appearance: none;
+      text-align: left;
+      background: var(--bg-subtle);
+      border: 1.5px solid #CBD5E1;
+      border-radius: 9px;
+      padding: 0.62rem 0.85rem;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .quiz-opt-btn:hover:not(:disabled) {
+      border-color: var(--polyu-red);
+      background: var(--polyu-red-soft);
+    }
+
+    .quiz-opt-btn.correct {
+      background: var(--emerald-soft);
+      border-color: var(--emerald);
+      color: #14532D;
+      font-weight: 700;
+    }
+
+    .quiz-opt-btn.wrong {
+      background: var(--crimson-soft);
+      border-color: var(--crimson);
+      color: #7F1D1D;
+    }
+
+    .quiz-feedback {
+      display: none;
+      margin-top: 0.85rem;
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      font-size: 0.89rem;
+    }
+    .quiz-feedback.show {
+      display: block;
+    }
+    .quiz-feedback.ok {
+      background: #F0FDF4;
+      border: 1px solid #86EFAC;
+      color: #14532D;
+    }
+    .quiz-feedback.err {
+      background: #FEF2F2;
+      border: 1px solid #FCA5A5;
+      color: #7F1D1D;
+    }
+
+    /* Footer Beamer Bar */
+    .site-footer {
+      margin-top: 3rem;
+      background: #1E293B;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 0.85rem;
+    }
+
+    .footer-gold-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      background: var(--beamer-gold);
+      color: #1E293B;
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 0.35rem 1.2rem;
+      text-align: center;
+    }
+
+    .footer-inner {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 1.35rem 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Beamer Slide Top Gold Strip -->
+  <div class="beamer-topbar" aria-hidden="true">
+    <div class="half-left"></div>
+    <div class="half-right"></div>
+  </div>
+
+  <!-- PolyU Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div>
+        <div class="course-kicker">The Hong Kong Polytechnic University • AMA1702 Calculus</div>
+        <h1>Lecture Notes 11 — Interactive Companion</h1>
+        <p class="header-subtitle">
+          Explore <strong>Sequences &amp; Series</strong>, <strong>Power Series</strong>, and <strong>Taylor’s Series</strong> visually before and after our lecture on <strong>25 November 2026</strong>.
+        </p>
+      </div>
+
+      <div class="instructor-card">
+        <div class="inst-name">Dr. LEE Kei Fung, Charles</div>
+        <div class="inst-role">Department of Applied Mathematics (PolyU)</div>
+        <div class="consult-pill" title="Drop by for Calculus questions!">
+          🕒 Consultation: Fri 08:30–10:20 (Room TU715)
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sticky Navigation Tabs -->
+  <nav class="sticky-nav" aria-label="Lecture Sections">
+    <div class="nav-inner">
+      <button class="nav-tab active" data-target="panel-seq" type="button">
+        <span class="nav-badge">1</span> Sequences &amp; Series
+      </button>
+      <button class="nav-tab" data-target="panel-power" type="button">
+        <span class="nav-badge">2</span> Power Series
+      </button>
+      <button class="nav-tab" data-target="panel-taylor" type="button">
+        <span class="nav-badge">3</span> Taylor’s Series &amp; Remainder
+      </button>
+      <button class="nav-tab" data-target="panel-quiz" type="button">
+        <span class="nav-badge">✓</span> Pre-Lecture Concept Check (8 Qs)
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="container">
+
+    <!-- =====================================================================
+         MODULE 1: SEQUENCES AND SERIES (SLIDES 3 - 21)
+         ===================================================================== -->
+    <section id="panel-seq" class="module-panel active" aria-labelledby="heading-seq">
+      <div class="module-banner">
+        <div>
+          <h2 id="heading-seq">1. Sequences and Series</h2>
+          <p>
+            From Zeno’s 5th-century B.C. motion paradox to rigorous \(\varepsilon\)-\(N\) sequence limits, Fibonacci’s Golden Ratio, and infinite geometric progressions.
+          </p>
+        </div>
+        <span class="slide-ref-pill">Lecture Notes 11 • Slides 3–21</span>
+      </div>
+
+      <!-- SUB-LAB 1A: ZENO'S DICHOTOMY PARADOX SIMULATOR -->
+      <div class="lab-card">
+        <div class="lab-header">
+          <h3><span class="lab-tag">Lab 1A</span> Zeno’s Motion Paradox: <em>The Dichotomy</em> (Figures 1 &amp; 2)</h3>
+          <span style="font-size:0.83rem;color:var(--text-muted);">Slides 3–4 &amp; 17–21</span>
+        </div>
+
+        <div class="lab-grid">
+          <div class="controls-pane">
+            <div class="control-group">
+              <span class="control-label">Select Paradox Direction</span>
+              <div class="pill-row">
+                <button id="zeno-mode-fwd" class="pill-btn active" type="button">Figure 1: Original (No First Step)</button>
+                <button id="zeno-mode-rev" class="pill-btn" type="button">Figure 2: Reverse (No Last Step)</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="zeno-step">
+                <span>Subdivision Depth \(n\)</span>
+                <span id="zeno-step-val" class="control-val">n = 3</span>
+              </label>
+              <input id="zeno-step" type="range" min="0" max="10" step="1" value="3" />
+            </div>
+
+            <div class="pill-row">
+              <button id="zeno-prev" class="action-btn secondary" type="button">◀ Prev</button>
+              <button id="zeno-next" class="action-btn" type="button">Next Subdivision ▶</button>
+              <button id="zeno-play" class="action-btn secondary" type="button">▶ Auto-Step</button>
+              <button id="zeno-reset" class="action-btn secondary" type="button">↺ Reset</button>
+            </div>
+
+            <div id="zeno-status-msg" class="insight-callout">
+              <!-- Populated dynamically by JS -->
+            </div>
+
+            <details class="deep-dive">
+              <summary>Why \(\sum_{n=1}^{\infty} \frac{1}{2^n} = 1\) Does NOT Solve Zeno’s Paradox!</summary>
+              <div class="dive-content">
+                <p>
+                  <strong>1. Tail-End Problem (Slides 17–18):</strong> In Figure 1, the walker stands at \(0\) facing the <em>infinite tail end</em> \(\dots, \frac{1}{8}, \frac{1}{4}, \frac{1}{2}, 1\)—there is no “first step.” Reversing the path (Figure 2: \(\frac{1}{2}, \frac{1}{4}, \frac{1}{8}, \dots\)) creates the mirror problem: there is no “last step”!
+                </p>
+                <p style="margin-top:0.45rem;">
+                  <strong>2. Circular Reasoning with Time &amp; Speed (Slide 19):</strong> Claiming an infinite series of steps takes finite time assumes constant <em>speed = distance / time</em>. Yet Zeno rejects the <em>distance</em> part itself—assuming motion occurs to “prove” motion is possible is circular!
+                </p>
+                <p style="margin-top:0.45rem;">
+                  <strong>3. Quantized Space &amp; Physics (Slide 21, Footnote 1):</strong> Zeno’s paradox challenges the <em>infinite divisibility of physical space</em>. If space is discrete below the <strong>Planck scale (\(\sim 10^{-33}\text{ cm}\))</strong>—as explored in <em>loop quantum gravity</em> (Chamseddine, Connes &amp; Mukhanov, <em>J. High Energy Phys.</em> 2014)—motion decomposes into a large but <strong>finite</strong> number of irreducible steps, dissolving the paradox.
+                </p>
+              </div>
+            </details>
+          </div>
+
+          <div class="visual-pane">
+            <div class="canvas-wrap">
+              <canvas id="canvas-zeno" class="plot-canvas short-canvas"></canvas>
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric-tile">
+                <div class="m-label">Current Marker</div>
+                <div id="zeno-pos" class="m-val">1/8 (0.125 m)</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Finite Sum \(\sum_{k=1}^{n} \frac{1}{2^k}\)</div>
+                <div id="zeno-psum" class="m-val">7/8 = 0.875000</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Unresolved Gap \(2^{-n}\)</div>
+                <div id="zeno-rem" class="m-val">1/8 = 0.125000</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- THEORY CARDS: SEQUENCES VS SETS & DEFINITION 1.1 -->
+      <div class="ped-grid">
+        <div class="beamer-box thm-box">
+          <div class="beamer-box-title">Sequences vs. Sets &amp; Function View (Slide 5)</div>
+          <div class="beamer-box-body">
+            <p>
+              A <strong>sequence</strong> is an <em>ordered</em> list of real numbers (finite or infinite). Unlike a <em>set</em>, <strong>order matters</strong> and <strong>numbers may repeat</strong>:
+              \(\langle 1, 2, 3 \rangle \neq \langle 1, 3, 2 \rangle\), even though both form the same set \(\{1, 2, 3\}\).
+            </p>
+            <p>
+              Using natural numbers \(\mathbb{N} = \{0, 1, 2, 3, \dots\}\), any infinite sequence \(\{a_n\}_{n=0}^{\infty}\) is the range of a function \(f : \mathbb{N} \to \mathbb{R}\):
+              <span class="eq-tag">(1)</span>
+            </p>
+            \[ f(n) = a_n \]
+          </div>
+        </div>
+
+        <div class="beamer-box def-box">
+          <div class="beamer-box-title">Definition ( 1.1 ) — Limit of an Infinite Sequence</div>
+          <div class="beamer-box-body">
+            <p>
+              A real number \(L\) is the <strong>limit</strong> of \(\{a_n\}\), written \(\displaystyle \lim_{n \to \infty} a_n = L\) or \(a_n \to L\), if for any given \(\varepsilon > 0\) there exists an integer \(N\) such that
+              <span class="eq-tag">(2)</span>
+            </p>
+            \[ |a_n - L| < \varepsilon \quad \text{for all } n > N. \]
+            <p>
+              If \(L\) exists, \(\{a_n\}\) <strong>converges</strong> to \(L\) (<em>convergent</em>); otherwise it is <strong>divergent</strong>. By (1), limit laws and <strong>L’Hôpital’s Rule</strong> for \(f(x)\) as \(x \to \infty\) apply directly!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-LAB 1B: SEQUENCE LIMIT, EPSILON-N & FIBONACCI GOLDEN RATIO -->
+      <div class="lab-card">
+        <div class="lab-header">
+          <h3><span class="lab-tag">Lab 1B</span> Sequence Convergence, \(\varepsilon\)-\(N\) Tunnel &amp; Golden Ratio Explorer</h3>
+          <span style="font-size:0.83rem;color:var(--text-muted);">Exercises 1.1 – 1.4 (Slides 6–11)</span>
+        </div>
+
+        <div class="lab-grid">
+          <div class="controls-pane">
+            <div class="control-group">
+              <span class="control-label">Lecture Exercise Presets</span>
+              <div class="pill-row">
+                <button class="pill-btn seq-preset active" data-preset="ex1_1" type="button">Ex 1.1: \(1/2^n\)</button>
+                <button class="pill-btn seq-preset" data-preset="ex1_2" type="button">Ex 1.2: \(\frac{2n+1}{3n+2}\)</button>
+                <button class="pill-btn seq-preset" data-preset="ex1_3" type="button">Ex 1.3: \(\frac{e^n}{3n+2}\)</button>
+                <button class="pill-btn seq-preset" data-preset="ex1_4" type="button">Ex 1.4: Fibonacci \(\frac{F_n}{F_{n-1}}\)</button>
+                <button class="pill-btn seq-preset" data-preset="alt_damped" type="button">Bonus: \(\frac{(-1)^n}{n+1}\)</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="seq-eps">
+                <span>Tolerance Band \(\varepsilon > 0\)</span>
+                <span id="seq-eps-val" class="control-val">ε = 0.08</span>
+              </label>
+              <input id="seq-eps" type="range" min="0.01" max="0.50" step="0.01" value="0.08" />
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="seq-maxn">
+                <span>Displayed Terms (\(n \le N_{\max}\))</span>
+                <span id="seq-maxn-val" class="control-val">18</span>
+              </label>
+              <input id="seq-maxn" type="range" min="8" max="36" step="1" value="18" />
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="seq-inspect-n">
+                <span>Inspect Term Index \(n\)</span>
+                <span id="seq-inspect-val" class="control-val">n = 6</span>
+              </label>
+              <input id="seq-inspect-n" type="range" min="0" max="36" step="1" value="6" />
+            </div>
+
+            <label class="checkbox-row" for="seq-show-fx">
+              <input id="seq-show-fx" type="checkbox" checked />
+              <span>Overlay continuous real function \(f(x)\)</span>
+            </label>
+
+            <!-- Golden Ratio Visual Subcard (Shown automatically for Exercise 1.4) -->
+            <div id="fib-golden-card" class="insight-callout hidden">
+              <strong>Golden Ratio Rectangle (\(\varphi = \frac{1+\sqrt{5}}{2} \approx 1.618\)):</strong>
+              <p style="font-size:0.83rem;margin:0.3rem 0 0.5rem;">
+                Fibonacci numbers \(0, 1, 1, 2, 3, 5, 8, 13, 21, 34, \dots\) diverge (\(F_n \to \infty\)), yet consecutive ratios \(a_n = F_n / F_{n-1}\) alternate above and below \(\varphi\)!
+              </p>
+              <canvas id="canvas-golden" class="plot-canvas mini-canvas" style="background:#FFFDF7;border:1px solid #FDE68A;"></canvas>
+            </div>
+          </div>
+
+          <div class="visual-pane">
+            <div class="canvas-wrap">
+              <canvas id="canvas-seq" class="plot-canvas"></canvas>
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric-tile">
+                <div class="m-label">Limit \(L\)</div>
+                <div id="seq-metric-lim" class="m-val">0</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Threshold \(N(\varepsilon)\)</div>
+                <div id="seq-metric-N" class="m-val">N = 3 (all n &gt; 3)</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Inspected Term \(a_n\)</div>
+                <div id="seq-metric-an" class="m-val">a₆ = 0.015625</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Distance \(|a_n - L|\)</div>
+                <div id="seq-metric-err" class="m-val">0.015625 &lt; ε</div>
+              </div>
+            </div>
+
+            <div id="seq-derivation" class="derivation-card">
+              <!-- Populated dynamically with Lecture Solution steps -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- THEORY CARDS: INFINITE SERIES & GEOMETRIC PROGRESSION -->
+      <div class="ped-grid">
+        <div class="beamer-box def-box">
+          <div class="beamer-box-title">Definition ( 1.2 ) — Sum of an Infinite Series</div>
+          <div class="beamer-box-body">
+            <p>
+              The <strong>sum</strong> of an infinite series \(\displaystyle \sum_{n=0}^{\infty} a_n = a_0 + a_1 + a_2 + \cdots\) is
+              <span class="eq-tag">(4)</span>
+            </p>
+            \[ \sum_{n=0}^{\infty} a_n = \lim_{n \to \infty} s_n, \quad \text{where } s_n = \sum_{k=0}^{n} a_k \;\; (n \ge 0) \]
+            <p>
+              is the sequence of <strong>partial sums</strong>. The series converges to \(s\) if \(\{s_n\} \to s\), and diverges if \(\{s_n\}\) diverges.
+            </p>
+          </div>
+        </div>
+
+        <div class="beamer-box thm-box">
+          <div class="beamer-box-title">Theorem ( 1.1 ) — Geometric Progression (Slides 14–15)</div>
+          <div class="beamer-box-body">
+            <p>
+              For \(s_n = a + ar + \cdots + ar^n\), subtracting \(r s_n\) cancels interior terms:
+              \(s_n - r s_n = a - a r^{n+1} \implies s_n = \dfrac{a(1 - r^{n+1})}{1 - r}\). Since \(r^{n+1} \to 0\) when \(|r| < 1\), for \(a \neq 0\) and \(|r| < 1\):
+              <span class="eq-tag">(6)</span>
+            </p>
+            \[ \sum_{n=0}^{\infty} a r^n = a + ar + ar^2 + \cdots = \frac{a}{1 - r} \]
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-LAB 1C: GEOMETRIC SERIES & REPEATING DECIMAL CONVERTER -->
+      <div class="lab-card">
+        <div class="lab-header">
+          <h3><span class="lab-tag">Lab 1C</span> Geometric Progression &amp; Repeating Decimal Converter</h3>
+          <span style="font-size:0.83rem;color:var(--text-muted);">Exercises 1.5 &amp; 1.6 (Slides 14–16)</span>
+        </div>
+
+        <div class="lab-grid">
+          <div class="controls-pane">
+            <div class="control-group">
+              <span class="control-label">Geometric Series Presets</span>
+              <div class="pill-row">
+                <button class="pill-btn geo-preset active" data-preset="ex1_5" type="button">Ex 1.5: \(\sum_{n=1}^{\infty} \frac{1}{2^n}\)</button>
+                <button class="pill-btn geo-preset" data-preset="ex1_6" type="button">Ex 1.6: \(0.\overline{17}\)</button>
+                <button class="pill-btn geo-preset" data-preset="alt_geo" type="button">Alternating (\(r = -0.6\))</button>
+                <button class="pill-btn geo-preset" data-preset="div_geo" type="button">Divergent (\(r = 1.12\))</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="geo-a">
+                <span>First Term \(a\)</span>
+                <span id="geo-a-val" class="control-val">a = 0.50</span>
+              </label>
+              <input id="geo-a" type="range" min="-2.0" max="2.0" step="0.01" value="0.50" />
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="geo-r">
+                <span>Common Ratio \(r\)</span>
+                <span id="geo-r-val" class="control-val">r = 0.50</span>
+              </label>
+              <input id="geo-r" type="range" min="-1.25" max="1.25" step="0.01" value="0.50" />
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="geo-n">
+                <span>Partial Sum Index \(n\) in \(s_n = \sum_{k=0}^{n} a r^k\)</span>
+                <span id="geo-n-val" class="control-val">n = 8</span>
+              </label>
+              <input id="geo-n" type="range" min="0" max="25" step="1" value="8" />
+            </div>
+
+            <hr style="border:none;border-top:1px solid var(--border-light);" />
+
+            <!-- Repeating Decimal Rational Converter (Exercise 1.6) -->
+            <div class="control-group">
+              <label class="control-label" for="rep-digits">
+                <span>Ex 1.6 Live Converter: \(0.\overline{\text{digits}} \to \frac{p}{q}\)</span>
+              </label>
+              <input id="rep-digits" type="text" value="17" maxlength="6" placeholder="Enter digits e.g. 17" aria-label="Repeating decimal block" />
+              <div class="pill-row" style="margin-top:0.25rem;">
+                <button class="pill-btn rep-chip active" data-digits="17" type="button">\(0.\overline{17}\)</button>
+                <button class="pill-btn rep-chip" data-digits="3" type="button">\(0.\overline{3}\)</button>
+                <button class="pill-btn rep-chip" data-digits="09" type="button">\(0.\overline{09}\)</button>
+                <button class="pill-btn rep-chip" data-digits="142857" type="button">\(0.\overline{142857}\)</button>
+                <button class="pill-btn rep-chip" data-digits="9" type="button">\(0.\overline{9}=1\)</button>
+              </div>
+            </div>
+
+            <div id="rep-output-math" class="insight-callout" style="font-size:0.86rem;">
+              <!-- Live repeating decimal formula rendered here -->
+            </div>
+          </div>
+
+          <div class="visual-pane">
+            <div class="canvas-wrap">
+              <canvas id="canvas-geo" class="plot-canvas"></canvas>
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric-tile">
+                <div class="m-label">Partial Sum \(s_n\)</div>
+                <div id="geo-metric-sn" class="m-val">0.998047</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Infinite Sum \(\frac{a}{1-r}\)</div>
+                <div id="geo-metric-sum" class="m-val">1.000000</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Truncation Error</div>
+                <div id="geo-metric-tail" class="m-val">0.001953</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Convergence Check</div>
+                <div id="geo-metric-verdict" class="m-val"><span class="status-badge status-ok">|r| &lt; 1 Converges</span></div>
+              </div>
+            </div>
+
+            <div id="geo-derivation" class="derivation-card">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- END MODULE 1: SEQUENCES AND SERIES -->
+
+
+    <!-- =====================================================================
+         MODULE 2: POWER SERIES (SLIDES 22 - 25)
+         ===================================================================== -->
+    <section id="panel-power" class="module-panel" aria-labelledby="heading-power">
+      <div class="module-banner">
+        <div>
+          <h2 id="heading-power">2. Power Series &amp; Term-by-Term Calculus</h2>
+          <p>
+            Turn geometric progressions into functions of \(x\), visualize the Interval of Convergence \(|x - c| < R\), and differentiate or integrate term by term.
+          </p>
+        </div>
+        <span class="slide-ref-pill">Lecture Notes 11 • Slides 22–25</span>
+      </div>
+
+      <!-- THEORY CARDS: POWER SERIES & THEOREM 2.1 -->
+      <div class="ped-grid">
+        <div class="beamer-box def-box">
+          <div class="beamer-box-title">Power Series &amp; Geometric Function (Slide 22)</div>
+          <div class="beamer-box-body">
+            <p>
+              A <strong>power series</strong> about constant center \(c\) has the form \(\displaystyle \sum_{n=0}^{\infty} a_n (x - c)^n\). Replacing \(r\) by variable \(x\) in the geometric series (\(c = 0\)) yields:
+              <span class="eq-tag">(7)</span>
+            </p>
+            \[ \sum_{n=0}^{\infty} x^n = 1 + x + x^2 + x^3 + \cdots = \frac{1}{1 - x} \quad \text{for } -1 < x < 1. \]
+            <p>
+              For \(|x| \ge 1\), \(x^n \not\to 0\), so the series <strong>diverges by the \(n\)-th Term Test</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div class="beamer-box thm-box">
+          <div class="beamer-box-title">Theorem ( 2.1 ) — Term-by-Term Calculus (Slide 24)</div>
+          <div class="beamer-box-body">
+            <p>
+              If \(\displaystyle f(x) = \sum_{n=0}^{\infty} a_n (x - c)^n\) converges for \(|x - c| < R\), then both
+              <span class="eq-tag">(8)</span>
+            </p>
+            \[ f'(x) = \sum_{n=1}^{\infty} n\,a_n (x - c)^{n-1} \quad \text{and} \quad \int f(x)\,dx = C + \sum_{n=0}^{\infty} \frac{a_n}{n+1}(x - c)^{n+1} \]
+            <p>
+              converge for \(|x - c| < R\). <strong>Crucial Caution:</strong> Convergence at the endpoints \(x = c \pm R\) is <em>not</em> guaranteed by Theorem 2.1 and must be checked individually!<sup>*</sup>
+            </p>
+            <p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.35rem;">
+              <sup>*</sup>Footnote 2: Proofs require <em>uniform convergence</em> (Bromwich, <em>An Introduction to the Theory of Infinite Series</em>, 1955).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-LAB 2: POWER SERIES & ENDPOINT INSPECTOR -->
+      <div class="lab-card">
+        <div class="lab-header">
+          <h3><span class="lab-tag">Lab 2</span> Power Series, Term-by-Term Derivative/Integral &amp; Endpoint Inspector</h3>
+          <span style="font-size:0.83rem;color:var(--text-muted);">Equation (7), Theorem 2.1 &amp; Exercise 2.1</span>
+        </div>
+
+        <div class="lab-grid">
+          <div class="controls-pane">
+            <div class="control-group">
+              <span class="control-label">Select Power Series Operation</span>
+              <div class="pill-row">
+                <button class="pill-btn ps-mode active" data-mode="ps_deriv" type="button">Ex 2.1: \(f'(x) = \sum n x^{n-1}\)</button>
+                <button class="pill-btn ps-mode" data-mode="ps_base" type="button">Eq (7): \(f(x) = \sum x^n\)</button>
+                <button class="pill-btn ps-mode" data-mode="ps_integ" type="button">Integral: \(\int_0^x \frac{dt}{1-t}\)</button>
+                <button class="pill-btn ps-mode" data-mode="ps_shifted" type="button">Shifted \((c, R)\)</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="ps-deg">
+                <span>Polynomial Truncation Degree \(N\)</span>
+                <span id="ps-deg-val" class="control-val">N = 5</span>
+              </label>
+              <input id="ps-deg" type="range" min="1" max="25" step="1" value="5" />
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="ps-x0">
+                <span>Probe Point \(x\)</span>
+                <span id="ps-x0-val" class="control-val">x = 0.50</span>
+              </label>
+              <input id="ps-x0" type="range" min="-1.40" max="1.40" step="0.02" value="0.50" />
+              <div class="pill-row" style="margin-top:0.25rem;">
+                <button id="ps-jump-left" class="pill-btn" type="button">Test Left Endpoint \(c - R\)</button>
+                <button id="ps-jump-mid" class="pill-btn" type="button">Interior \(x = 0.5\)</button>
+                <button id="ps-jump-right" class="pill-btn" type="button">Test Right Endpoint \(c + R\)</button>
+              </div>
+            </div>
+
+            <!-- Shifted Center & Radius Sliders (Visible when "Shifted (c, R)" mode is chosen) -->
+            <div id="ps-shift-controls" class="hidden" style="border-top:1px dashed #CBD5E1;padding-top:0.75rem;">
+              <div class="control-group" style="margin-bottom:0.65rem;">
+                <label class="control-label" for="ps-c">
+                  <span>Center \(c\)</span>
+                  <span id="ps-c-val" class="control-val">c = 0.0</span>
+                </label>
+                <input id="ps-c" type="range" min="-1.0" max="1.0" step="0.1" value="0.0" />
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="ps-R">
+                  <span>Radius of Convergence \(R\)</span>
+                  <span id="ps-R-val" class="control-val">R = 1.0</span>
+                </label>
+                <input id="ps-R" type="range" min="0.4" max="1.8" step="0.1" value="1.0" />
+              </div>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Endpoint Partial Sums at \(x = c - R\) vs. \(x = c + R\)</span>
+              <div class="canvas-wrap" style="padding:0.35rem;">
+                <canvas id="canvas-ps-endpoints" class="plot-canvas mini-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="visual-pane">
+            <div class="canvas-wrap">
+              <canvas id="canvas-power" class="plot-canvas"></canvas>
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric-tile">
+                <div class="m-label">Interval of Conv.</div>
+                <div id="ps-metric-ioc" class="m-val">(-1, 1)</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Non-Series Exact Value</div>
+                <div id="ps-metric-exact" class="m-val">4.000000</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Partial Sum \(S_N(x)\)</div>
+                <div id="ps-metric-approx" class="m-val">3.812500</div>
+              </div>
+              <div class="metric-tile">
+                <div class="m-label">Status at Probe \(x\)</div>
+                <div id="ps-metric-err" class="m-val"><span class="status-badge status-ok">|Err| = 0.1875</span></div>
+              </div>
+            </div>
+
+            <div id="ps-derivation" class="derivation-card">
+              <!-- Populated dynamically with Exercise 2.1 & endpoint checks -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- END MODULE 2: POWER SERIES -->
